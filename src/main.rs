@@ -5,7 +5,7 @@ use bevy_rapier2d::prelude::*;
 use components::*;
 
 const PLAYER_COLOR: Color = Color::srgb(1., 0., 0.);
-const PLAYER_SPEED: f32 = 500.0;
+const CROSSHAIR_SPACING: f32 = 50.0;
 
 fn main() {
     App::new()
@@ -13,7 +13,7 @@ fn main() {
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0))
         .add_plugins(RapierDebugRenderPlugin::default())
         .add_systems(Startup, (camera_setup, place_player))
-        .add_systems(Update, player_movement)
+        .add_systems(Update, (player_movement, crosshair_tracking))
         .run();
 }
 
@@ -26,15 +26,28 @@ fn place_player(
     ){
         commands
                 .spawn(Player)
+                .insert(Speed(500.0))
                 .insert(TransformBundle::from(Transform::from_xyz(0.0, -100.0, 0.0)))
                 .insert(RigidBody::KinematicPositionBased)
                 .insert(Collider::ball(100.0 / 2.0))
                 .insert(KinematicCharacterController::default());
+        
+        commands
+                .spawn(Crosshair)
+                .insert(TransformBundle::from(Transform::from_xyz(0.0, 50.0, 0.0)))
+                .insert(SpriteBundle {
+                    sprite: Sprite {
+                        color: PLAYER_COLOR,
+                        ..default()
+                    },
+                    ..default()
+                });
 }
 
 fn player_movement(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut player_query: Query<&mut KinematicCharacterController, With<Player>>,
+    speed_query: Query<&Speed, With<Player>>,
     time: Res<Time>,
 ) {
     if let Ok(mut transform) = player_query.get_single_mut() {
@@ -56,9 +69,23 @@ fn player_movement(
         if direction.length() > 0.0 {
             direction = direction.normalize();
         }
-
-        let movement = Some(Vec2::new(direction.x, direction.y) * PLAYER_SPEED * time.delta_seconds());
+        let speed = speed_query.get_single().unwrap().0;
+        let movement = Some(Vec2::new(direction.x, direction.y) * speed * time.delta_seconds());
 
         transform.translation = movement;
     }
 }
+
+
+fn crosshair_tracking(
+    mut params: ParamSet<(
+        Query<&Transform, With<Player>>,           
+        Query<&mut Transform, With<Crosshair>>,    
+    )>,
+) {
+    let player_transform = params.p0().get_single().unwrap().translation;
+    for mut transform in params.p1().iter_mut() {
+        transform.translation = player_transform;
+    }
+}
+

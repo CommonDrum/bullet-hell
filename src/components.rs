@@ -7,4 +7,7 @@ pub struct Player;
 pub struct Health(i32);
 
 #[derive(Component)]
-pub struct Speed(f32);
+pub struct Speed(pub f32);
+
+#[derive(Component)]
+pub struct Crosshair;
