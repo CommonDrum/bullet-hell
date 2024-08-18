@@ -4,10 +4,13 @@ use bevy::prelude::*;
 pub struct Player;
 
 #[derive(Component)]
-pub struct Health(i32);
+pub struct Bullet;
+
+#[derive(Component)]
+pub struct Health(pub f32);
 
 #[derive(Component)]
 pub struct Speed(pub f32);
 
 #[derive(Component)]
-pub struct Crosshair;
+pub struct Damage(pub f32);

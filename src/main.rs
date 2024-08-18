@@ -5,7 +5,6 @@ use bevy_rapier2d::prelude::*;
 use components::*;
 
 const PLAYER_COLOR: Color = Color::srgb(1., 0., 0.);
-const CROSSHAIR_SPACING: f32 = 50.0;
 
 fn main() {
     App::new()
@@ -13,7 +12,7 @@ fn main() {
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0))
         .add_plugins(RapierDebugRenderPlugin::default())
         .add_systems(Startup, (camera_setup, place_player))
-        .add_systems(Update, (player_movement, crosshair_tracking))
+        .add_systems(Update, (player_movement))
         .run();
 }
 
@@ -21,35 +20,24 @@ fn camera_setup(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
 }
 
-fn place_player(
-    mut commands: Commands,
-    ){
-        commands
-                .spawn(Player)
-                .insert(Speed(500.0))
-                .insert(TransformBundle::from(Transform::from_xyz(0.0, -100.0, 0.0)))
-                .insert(RigidBody::KinematicPositionBased)
-                .insert(Collider::ball(100.0 / 2.0))
-                .insert(LockedAxes::TRANSLATION_LOCKED)
-                .insert(KinematicCharacterController::default());
-        
-        commands
-                .spawn(Crosshair)
-                .insert(TransformBundle::from(Transform::from_xyz(0.0, 50.0, 0.0)))
-                .insert(SpriteBundle {
-                    sprite: Sprite {
-                        color: PLAYER_COLOR,
-                        ..default()
-                    },
-                    ..default()
-                });
+fn place_player(mut commands: Commands) {
+    commands
+        .spawn(Player)
+        .insert(Speed(500.0))
+        .insert(Health(100.0))
+        .insert(TransformBundle::from(Transform::from_xyz(0.0, -100.0, 0.0)))
+        .insert(RigidBody::KinematicPositionBased)
+        .insert(Collider::ball(100.0 / 2.0))
+        .insert(LockedAxes::TRANSLATION_LOCKED)
+        .insert(KinematicCharacterController::default());
 }
 
 fn player_movement(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut player_query: Query<(&mut KinematicCharacterController, &mut Transform), With<Player>>,           
+    mut player_query: Query<(&mut KinematicCharacterController, &mut Transform), With<Player>>,
     speed_query: Query<&Speed, With<Player>>,
     time: Res<Time>,
+    mut commands: Commands,
 ) {
     if let Ok((mut controller, mut transform)) = player_query.get_single_mut() {
         let mut direction = Vec3::ZERO;
@@ -63,6 +51,7 @@ fn player_movement(
                 KeyCode::ArrowDown | KeyCode::KeyS => direction += Vec3::new(0.0, -1.0, 0.0),
                 KeyCode::KeyZ => rotation_direction += 1.0,
                 KeyCode::KeyX => rotation_direction -= 1.0,
+                KeyCode::Space => spawn_bullet(&mut commands, 0.0, 100.0),
                 _ => (),
             }
         }
@@ -75,19 +64,20 @@ fn player_movement(
         let movement = Some(Vec2::new(direction.x, direction.y) * speed * time.delta_seconds());
 
         controller.translation = movement;
-        transform.rotation *= Quat::from_rotation_z(rotation_direction * 5.0 * time.delta_seconds());
+        transform.rotation *=
+            Quat::from_rotation_z(rotation_direction * 5.0 * time.delta_seconds());
     }
 }
 
-fn crosshair_tracking(
-    mut params: ParamSet<(
-        Query<&Transform, With<Player>>,           
-        Query<&mut Transform, With<Crosshair>>,    
-    )>,
-) {
-    let player_transform = params.p0().get_single().unwrap().translation;
-    for mut transform in params.p1().iter_mut() {
-        transform.translation = player_transform;
-    }
+fn spawn_bullet(mut commands: &mut Commands, x: f32, y: f32) {
+    commands
+        .spawn(Bullet)
+        .insert(TransformBundle::from(Transform::from_xyz(x, y, 0.0)))
+        .insert(RigidBody::Dynamic)
+        .insert(Collider::ball(10.0 / 2.0))
+        .insert(Velocity {
+            linvel: Vec2::new(10.0, 22.0),
+            angvel: 0.,
+        })
+        .insert(GravityScale(0.0));
 }
-
