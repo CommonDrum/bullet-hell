@@ -51,7 +51,7 @@ fn player_movement(
                 KeyCode::ArrowDown | KeyCode::KeyS => direction += Vec3::new(0.0, -1.0, 0.0),
                 KeyCode::KeyZ => rotation_direction += 1.0,
                 KeyCode::KeyX => rotation_direction -= 1.0,
-                KeyCode::Space => spawn_bullet(&mut commands, 0.0, 100.0),
+                KeyCode::Space => shoot(&mut commands, &transform),
                 _ => (),
             }
         }
@@ -64,19 +64,30 @@ fn player_movement(
         let movement = Some(Vec2::new(direction.x, direction.y) * speed * time.delta_seconds());
 
         controller.translation = movement;
-        transform.rotation *=
-            Quat::from_rotation_z(rotation_direction * 5.0 * time.delta_seconds());
+        transform.rotation *= Quat::from_rotation_z(rotation_direction * 5.0 * time.delta_seconds());
     }
 }
 
-fn spawn_bullet(mut commands: &mut Commands, x: f32, y: f32) {
+fn shoot(commands: &mut Commands, player_transform: &Transform) {
+    // Calculate bullet spawn position
+    let forward_direction = player_transform.rotation * Vec3::Y;
+    let bullet_spawn_position = player_transform.translation + forward_direction * 100.0;
+
+    // Calculate bullet velocity
+    let bullet_velocity = forward_direction * 500.0;
+
+    // Spawn the bullet
     commands
         .spawn(Bullet)
-        .insert(TransformBundle::from(Transform::from_xyz(x, y, 0.0)))
+        .insert(TransformBundle::from(Transform::from_xyz(
+            bullet_spawn_position.x,
+            bullet_spawn_position.y,
+            0.0,
+        )))
         .insert(RigidBody::Dynamic)
         .insert(Collider::ball(10.0 / 2.0))
         .insert(Velocity {
-            linvel: Vec2::new(10.0, 22.0),
+            linvel: Vec2::new(bullet_velocity.x, bullet_velocity.y),
             angvel: 0.,
         })
         .insert(GravityScale(0.0));
