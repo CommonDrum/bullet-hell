@@ -11,6 +11,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0))
         .add_plugins(RapierDebugRenderPlugin::default())
+        .insert_resource(Msaa::Off)
         .add_systems(Startup, (camera_setup, place_player))
         .add_systems(Update, (player_movement))
         .run();
@@ -20,11 +21,19 @@ fn camera_setup(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
 }
 
-fn place_player(mut commands: Commands) {
+fn place_player(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn(Player)
         .insert(Speed(500.0))
         .insert(Health(100.0))
+        .insert(SpriteBundle {
+            sprite: Sprite {
+                custom_size: Some(Vec2::new(100.0, 120.0)),
+                ..Default::default()
+            },
+            texture: asset_server.load("sprites/Soldier 1/soldier1_gun.png"),
+            ..default()
+        })
         .insert(TransformBundle::from(Transform::from_xyz(0.0, -100.0, 0.0)))
         .insert(RigidBody::KinematicPositionBased)
         .insert(Collider::ball(100.0 / 2.0))
@@ -64,19 +73,17 @@ fn player_movement(
         let movement = Some(Vec2::new(direction.x, direction.y) * speed * time.delta_seconds());
 
         controller.translation = movement;
-        transform.rotation *= Quat::from_rotation_z(rotation_direction * 5.0 * time.delta_seconds());
+        transform.rotation *=
+            Quat::from_rotation_z(rotation_direction * 5.0 * time.delta_seconds());
     }
 }
 
 fn shoot(commands: &mut Commands, player_transform: &Transform) {
-    // Calculate bullet spawn position
     let forward_direction = player_transform.rotation * Vec3::Y;
-    let bullet_spawn_position = player_transform.translation + forward_direction * 100.0;
+    let bullet_spawn_position = player_transform.translation + forward_direction * 60.0;
 
-    // Calculate bullet velocity
     let bullet_velocity = forward_direction * 500.0;
 
-    // Spawn the bullet
     commands
         .spawn(Bullet)
         .insert(TransformBundle::from(Transform::from_xyz(
