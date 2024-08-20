@@ -1,19 +1,22 @@
 pub mod components;
+pub mod grid;
 
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use components::*;
+use grid::*;
 
 const PLAYER_COLOR: Color = Color::srgb(1., 0., 0.);
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0))
+        .add_plugins( GridPlugin{granularity: 11})
+        .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(101.0))
         .add_plugins(RapierDebugRenderPlugin::default())
         .insert_resource(Msaa::Off)
         .add_systems(Startup, (camera_setup, place_player))
-        .add_systems(Update, (player_movement))
+        .add_systems(Update, (player_movement, camera_system))
         .run();
 }
 
@@ -98,4 +101,20 @@ fn shoot(commands: &mut Commands, player_transform: &Transform) {
             angvel: 0.,
         })
         .insert(GravityScale(0.0));
+}
+
+fn camera_system(
+    mut param_set: ParamSet<(Query<&mut Transform, With<Camera>>, Query<&Transform, With<Player>>)>,
+) {
+    // First, get the player's transform
+    let player_translation = {
+        let binding_1 = param_set.p1();
+        let player_transform = binding_1.get_single().unwrap();
+        player_transform.translation
+    };
+
+    // Then, update the camera's transform
+    let mut binding_0 = param_set.p0();
+    let mut camera_transform = binding_0.get_single_mut().unwrap();
+    camera_transform.translation = player_translation;
 }
