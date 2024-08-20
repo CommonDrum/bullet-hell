@@ -1,22 +1,21 @@
 pub mod components;
 pub mod grid;
 
+use bevy::input::mouse::{MouseScrollUnit, MouseWheel};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use components::*;
 use grid::*;
 
-const PLAYER_COLOR: Color = Color::srgb(1., 0., 0.);
-
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugins( GridPlugin{granularity: 11})
+        .add_plugins(GridPlugin { granularity: 11 })
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(101.0))
         .add_plugins(RapierDebugRenderPlugin::default())
         .insert_resource(Msaa::Off)
         .add_systems(Startup, (camera_setup, place_player))
-        .add_systems(Update, (player_movement, camera_system))
+        .add_systems(Update, (player_movement, camera_system, scroll_events))
         .run();
 }
 
@@ -104,7 +103,10 @@ fn shoot(commands: &mut Commands, player_transform: &Transform) {
 }
 
 fn camera_system(
-    mut param_set: ParamSet<(Query<&mut Transform, With<Camera>>, Query<&Transform, With<Player>>)>,
+    mut param_set: ParamSet<(
+        Query<&mut Transform, With<Camera>>,
+        Query<&Transform, With<Player>>,
+    )>,
 ) {
     // First, get the player's transform
     let player_translation = {
@@ -117,4 +119,22 @@ fn camera_system(
     let mut binding_0 = param_set.p0();
     let mut camera_transform = binding_0.get_single_mut().unwrap();
     camera_transform.translation = player_translation;
+}
+
+fn scroll_events(
+    mut evr_scroll: EventReader<MouseWheel>,
+    mut query: Query<&mut OrthographicProjection, With<Camera>>,
+) {
+    for ev in evr_scroll.read() {
+        let scroll_amount = match ev.unit {
+            MouseScrollUnit::Line => ev.y,
+            MouseScrollUnit::Pixel => ev.y * 0.1, // Adjust the sensitivity for pixel units if needed
+        };
+
+        for mut projection in query.iter_mut() {
+            let mut log_scale = projection.scale.ln();
+            log_scale -= scroll_amount * 0.1; // Adjust this factor to control zoom speed
+            projection.scale = log_scale.exp();
+        }
+    }
 }
