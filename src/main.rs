@@ -7,7 +7,8 @@ use bevy_rapier2d::prelude::*;
 use components::*;
 use grid::*;
 
-
+const MAP_SIZE: i32 = 50;
+const BACKGROUND_LAYER: f32 = -1.1;
 
 fn main() {
     App::new()
@@ -15,7 +16,7 @@ fn main() {
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(101.0))
         .add_plugins(RapierDebugRenderPlugin::default())
         .insert_resource(Msaa::Off)
-        .add_systems(Startup, (camera_setup, place_player))
+        .add_systems(Startup, (camera_setup, place_player, place_background))
         .add_systems(Update, (player_movement, camera_system, scroll_events))
         .run();
 }
@@ -31,7 +32,7 @@ fn place_player(mut commands: Commands, asset_server: Res<AssetServer>) {
         .insert(Health(100.0))
         .insert(SpriteBundle {
             sprite: Sprite {
-                custom_size: Some(Vec2::new(100.0, 120.0)),
+                custom_size: Some(Vec2::new(50.0, 60.0)),
                 ..Default::default()
             },
             texture: asset_server.load("sprites/Soldier 1/soldier1_gun.png"),
@@ -42,6 +43,23 @@ fn place_player(mut commands: Commands, asset_server: Res<AssetServer>) {
         .insert(Collider::ball(100.0 / 2.0))
         .insert(LockedAxes::TRANSLATION_LOCKED)
         .insert(KinematicCharacterController::default());
+}
+
+fn place_background(mut commands: Commands, asset_server: Res<AssetServer>) {
+    for y in -MAP_SIZE..MAP_SIZE{
+        for x in -MAP_SIZE..MAP_SIZE{
+            let (viewport_x, viewport_y) = get_viewport_cords(x,y);
+            commands.spawn(SpriteBundle {
+            sprite: Sprite {
+                custom_size: Some(Vec2::new(BASIC_SIZE_IN_VIEWPORT, BASIC_SIZE_IN_VIEWPORT)),
+                ..Default::default()
+            },
+            texture: asset_server.load("sprites/Tiles/tile_101.png"),
+            ..default()
+        })
+        .insert(TransformBundle::from(Transform::from_xyz(viewport_x, viewport_y, BACKGROUND_LAYER)));
+        }
+    }
 }
 
     fn player_movement(
