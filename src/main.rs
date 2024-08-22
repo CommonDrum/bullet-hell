@@ -7,10 +7,11 @@ use bevy_rapier2d::prelude::*;
 use components::*;
 use grid::*;
 
+
+
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugins(GridPlugin { granularity: 11 })
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(101.0))
         .add_plugins(RapierDebugRenderPlugin::default())
         .insert_resource(Msaa::Off)
@@ -36,14 +37,14 @@ fn place_player(mut commands: Commands, asset_server: Res<AssetServer>) {
             texture: asset_server.load("sprites/Soldier 1/soldier1_gun.png"),
             ..default()
         })
-        .insert(TransformBundle::from(Transform::from_xyz(0.0, -100.0, 0.0)))
+        .insert(TransformBundle::from(Transform::from_xyz(0.0, 100.0, 0.0)))
         .insert(RigidBody::KinematicPositionBased)
         .insert(Collider::ball(100.0 / 2.0))
         .insert(LockedAxes::TRANSLATION_LOCKED)
         .insert(KinematicCharacterController::default());
 }
 
-fn player_movement(
+    fn player_movement(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut player_query: Query<(&mut KinematicCharacterController, &mut Transform), With<Player>>,
     speed_query: Query<&Speed, With<Player>>,
@@ -108,14 +109,14 @@ fn camera_system(
         Query<&Transform, With<Player>>,
     )>,
 ) {
-    // First, get the player's transform
+    //This is a very nice way to see how borrow checker works. I first have to get the value and
+    //drop the reference and move to the other mutable reference.
     let player_translation = {
         let binding_1 = param_set.p1();
         let player_transform = binding_1.get_single().unwrap();
         player_transform.translation
     };
 
-    // Then, update the camera's transform
     let mut binding_0 = param_set.p0();
     let mut camera_transform = binding_0.get_single_mut().unwrap();
     camera_transform.translation = player_translation;
@@ -128,12 +129,12 @@ fn scroll_events(
     for ev in evr_scroll.read() {
         let scroll_amount = match ev.unit {
             MouseScrollUnit::Line => ev.y,
-            MouseScrollUnit::Pixel => ev.y * 0.1, // Adjust the sensitivity for pixel units if needed
+            MouseScrollUnit::Pixel => ev.y * 0.1,
         };
 
         for mut projection in query.iter_mut() {
             let mut log_scale = projection.scale.ln();
-            log_scale -= scroll_amount * 0.1; // Adjust this factor to control zoom speed
+            log_scale -= scroll_amount * 0.1;
             projection.scale = log_scale.exp();
         }
     }

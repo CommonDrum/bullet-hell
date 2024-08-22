@@ -1,14 +1,12 @@
 use bevy::prelude::*;
 
-pub struct GridPlugin {
-    pub granularity: i32,
+pub const BASIC_SIZE_IN_VIEWPORT: f32 = 50.0;
+
+pub fn get_grid_coords(){
+
 }
 
-impl Plugin for GridPlugin {
-    fn build(&self, app: &mut App) {}
-}
+pub fn get_viewport_cords(x: i32, y: i32) -> (f32,f32){
+    
 
-pub fn convert(pos: f32, bound_window: f32, bound_game: f32) -> f32 {
-    let tile_size = bound_window / bound_game;
-    pos * tile_size - (bound_window / 2.0) + (tile_size / 2.0)
 }
