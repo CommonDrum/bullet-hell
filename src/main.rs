@@ -17,7 +17,7 @@ fn main() {
         .add_plugins(RapierDebugRenderPlugin::default())
         .insert_resource(Msaa::Off)
         .add_systems(Startup, (camera_setup, place_player, place_background))
-        .add_systems(Update, (player_movement, camera_system, scroll_events))
+        .add_systems(Update, (player_movement, camera_system, scroll_events, shoot))
         .run();
 }
 
@@ -46,28 +46,58 @@ fn place_player(mut commands: Commands, asset_server: Res<AssetServer>) {
 }
 
 fn place_background(mut commands: Commands, asset_server: Res<AssetServer>) {
-    for y in -MAP_SIZE..MAP_SIZE{
-        for x in -MAP_SIZE..MAP_SIZE{
-            let (viewport_x, viewport_y) = get_viewport_cords(x,y);
-            commands.spawn(SpriteBundle {
-            sprite: Sprite {
-                custom_size: Some(Vec2::new(BASIC_SIZE_IN_VIEWPORT, BASIC_SIZE_IN_VIEWPORT)),
-                ..Default::default()
-            },
-            texture: asset_server.load("sprites/Tiles/tile_101.png"),
-            ..default()
-        })
-        .insert(TransformBundle::from(Transform::from_xyz(viewport_x, viewport_y, BACKGROUND_LAYER)));
+    for y in -MAP_SIZE..=MAP_SIZE {
+        for x in -MAP_SIZE..=MAP_SIZE {
+            let (viewport_x, viewport_y) = get_viewport_cords(x, y);
+            if x % 50 == 0 && x != 0 || y % 50 == 0 && y != 0 {
+                commands
+                    .spawn(SpriteBundle {
+                        sprite: Sprite {
+                            custom_size: Some(Vec2::new(
+                                BASIC_SIZE_IN_VIEWPORT,
+                                BASIC_SIZE_IN_VIEWPORT,
+                            )),
+                            ..Default::default()
+                        },
+                        texture: asset_server.load("sprites/Tiles/tile_102.png"),
+                        ..default()
+                    })
+                    .insert(TransformBundle::from(Transform::from_xyz(
+                        viewport_x,
+                        viewport_y,
+                        BACKGROUND_LAYER,
+                    )))
+                    .insert(RigidBody::KinematicPositionBased)
+                    .insert(Collider::cuboid(25.0, 25.0))
+                    .insert(LockedAxes::TRANSLATION_LOCKED);
+            } else {
+                commands
+                    .spawn(SpriteBundle {
+                        sprite: Sprite {
+                            custom_size: Some(Vec2::new(
+                                BASIC_SIZE_IN_VIEWPORT,
+                                BASIC_SIZE_IN_VIEWPORT,
+                            )),
+                            ..Default::default()
+                        },
+                        texture: asset_server.load("sprites/Tiles/tile_101.png"),
+                        ..default()
+                    })
+                    .insert(TransformBundle::from(Transform::from_xyz(
+                        viewport_x,
+                        viewport_y,
+                        BACKGROUND_LAYER,
+                    )));
+            }
         }
     }
 }
 
-    fn player_movement(
+fn player_movement(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut player_query: Query<(&mut KinematicCharacterController, &mut Transform), With<Player>>,
     speed_query: Query<&Speed, With<Player>>,
     time: Res<Time>,
-    mut commands: Commands,
 ) {
     if let Ok((mut controller, mut transform)) = player_query.get_single_mut() {
         let mut direction = Vec3::ZERO;
@@ -81,7 +111,6 @@ fn place_background(mut commands: Commands, asset_server: Res<AssetServer>) {
                 KeyCode::ArrowDown | KeyCode::KeyS => direction += Vec3::new(0.0, -1.0, 0.0),
                 KeyCode::KeyZ => rotation_direction += 1.0,
                 KeyCode::KeyX => rotation_direction -= 1.0,
-                KeyCode::Space => shoot(&mut commands, &transform),
                 _ => (),
             }
         }
@@ -99,26 +128,39 @@ fn place_background(mut commands: Commands, asset_server: Res<AssetServer>) {
     }
 }
 
-fn shoot(commands: &mut Commands, player_transform: &Transform) {
+//TODO: Most of the variables need to be moved either
+// to resources or spawning function for different types of bullets.
+fn shoot(mut commands:  Commands,
+    player_transform_q: Query<&Transform, With<Player>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    time: Res<Time>,
+) {
+    let player_transform = player_transform_q.get_single().unwrap();
     let forward_direction = player_transform.rotation * Vec3::Y;
     let bullet_spawn_position = player_transform.translation + forward_direction * 60.0;
 
     let bullet_velocity = forward_direction * 500.0;
-
-    commands
-        .spawn(Bullet)
-        .insert(TransformBundle::from(Transform::from_xyz(
-            bullet_spawn_position.x,
-            bullet_spawn_position.y,
-            0.0,
-        )))
-        .insert(RigidBody::Dynamic)
-        .insert(Collider::ball(10.0 / 2.0))
-        .insert(Velocity {
-            linvel: Vec2::new(bullet_velocity.x, bullet_velocity.y),
-            angvel: 0.,
-        })
-        .insert(GravityScale(0.0));
+    let fire_rate = 0.2;
+    if keyboard_input.pressed(KeyCode::Space) {
+        if 1 == 1{
+            commands
+                .spawn(Bullet)
+                .insert(TransformBundle::from(Transform::from_xyz(
+                    bullet_spawn_position.x,
+                    bullet_spawn_position.y,
+                    0.0,
+                )))
+                .insert(RigidBody::Dynamic)
+                .insert(Collider::ball(10.0 / 2.0))
+                .insert(Velocity {
+                    linvel: Vec2::new(bullet_velocity.x, bullet_velocity.y),
+                    angvel: 0.,
+                })
+                .insert(ColliderMassProperties::Density(0.2))
+                .insert(LockedAxes::ROTATION_LOCKED)
+                .insert(GravityScale(0.0));
+        }
+    }
 }
 
 fn camera_system(
