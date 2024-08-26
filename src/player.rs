@@ -1,33 +1,21 @@
-pub mod components;
-pub mod grid;
-pub mod player;
+//player.rs
 
-use bevy::input::mouse::{MouseScrollUnit, MouseWheel};
+
+use crate::components::*;
 use bevy::prelude::*;
+use bevy::input::mouse::{MouseScrollUnit, MouseWheel};
 use bevy_rapier2d::prelude::*;
-use components::*;
-use grid::*;
-use player::*;
 
-const MAP_SIZE: i32 = 50;
-const BACKGROUND_LAYER: f32 = -1.1;
-
-//TODO: Put bullets, player and grid into separate plugins.
-
-fn main() {
-    App::new()
-        .add_plugins(DefaultPlugins)
-        .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(101.0))
-        .add_plugins(RapierDebugRenderPlugin::default())
-        .add_plugins((grid::plugin, player::plugin))
-        .insert_resource(Msaa::Off)
-        .run();
+pub(super) fn plugin(app: &mut App) {
+    app.add_systems(Startup, (camera_setup, place_player))
+        .add_systems(Update, (player_movement, camera_system, scroll_events, shoot));
 }
 
 fn camera_setup(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
 }
 
+//TODO make the values here into constants also maybe put input handeling into separate file
 fn place_player(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn(Player)
