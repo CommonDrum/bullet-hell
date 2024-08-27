@@ -1,14 +1,16 @@
 //player.rs
 
-
 use crate::components::*;
-use bevy::prelude::*;
 use bevy::input::mouse::{MouseScrollUnit, MouseWheel};
+use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, (camera_setup, place_player))
-        .add_systems(Update, (player_movement, camera_system, scroll_events, shoot));
+        .add_systems(
+            Update,
+            (player_movement, camera_system, scroll_events, shoot),
+        );
 }
 
 fn camera_setup(mut commands: Commands) {
@@ -73,7 +75,8 @@ fn player_movement(
 
 //TODO: Most of the variables need to be moved either
 // to resources or spawning function for different types of bullets.
-fn shoot(mut commands:  Commands,
+fn shoot(
+    mut commands: Commands,
     player_transform_q: Query<&Transform, With<Player>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     time: Res<Time>,
@@ -85,7 +88,7 @@ fn shoot(mut commands:  Commands,
     let bullet_velocity = forward_direction * 500.0;
     let fire_rate = 0.2;
     if keyboard_input.pressed(KeyCode::Space) {
-        if 1 == 1{
+        if 1 == 1 {
             commands
                 .spawn(Bullet)
                 .insert(TransformBundle::from(Transform::from_xyz(

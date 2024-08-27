@@ -1,4 +1,3 @@
-
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
@@ -12,14 +11,12 @@ pub(super) fn plugin(app: &mut App) {
 
 pub fn get_grid_coords() {}
 
-
 pub fn get_viewport_cords(x: i32, y: i32) -> (f32, f32) {
     (
         x as f32 * BASIC_SIZE_IN_VIEWPORT,
         y as f32 * BASIC_SIZE_IN_VIEWPORT,
     )
 }
-
 
 fn place_background(mut commands: Commands, asset_server: Res<AssetServer>) {
     for y in -MAP_SIZE..=MAP_SIZE {
@@ -68,4 +65,3 @@ fn place_background(mut commands: Commands, asset_server: Res<AssetServer>) {
         }
     }
 }
-
