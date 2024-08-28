@@ -1,18 +1,23 @@
 //player.rs
 
-use crate::components::*;
 use crate::bullets::*;
+use crate::components::*;
 use bevy::input::mouse::{MouseScrollUnit, MouseWheel};
-use bevy::window::PrimaryWindow;
 use bevy::prelude::*;
+use bevy::window::PrimaryWindow;
 use bevy_rapier2d::prelude::*;
-
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, (camera_setup, place_player))
         .add_systems(
             Update,
-            (player_movement, camera_system, scroll_events, shoot, player_rotation),
+            (
+                player_movement,
+                camera_system,
+                scroll_events,
+                shoot,
+                player_rotation,
+            ),
         );
 }
 
@@ -86,12 +91,16 @@ fn shoot(
     let bullet_velocity = forward_direction * 500.0;
 
     if keyboard_input.pressed(KeyCode::Space) {
-        commands.spawn(BulletBundle{
-            bullet_spawn_position,
-            Velocity {
-                    linvel: Vec2::new(bullet_velocity.x, bullet_velocity.y),
-                    angvel: 0.,
-                },
+        commands.spawn(BulletBundle {
+            transform: TransformBundle::from(Transform::from_xyz(
+                bullet_spawn_position.x,
+                bullet_spawn_position.y,
+                0.0,
+            )),
+            velocity: Velocity {
+                linvel: Vec2::new(bullet_velocity.x, bullet_velocity.y),
+                angvel: 0.,
+            },
             ..Default::default()
         });
     }
@@ -134,8 +143,6 @@ fn scroll_events(
     }
 }
 
-
-
 fn player_rotation(
     mut q_transform: Query<&mut Transform, With<Player>>,
     q_windows: Query<&Window, With<PrimaryWindow>>,
@@ -147,10 +154,9 @@ fn player_rotation(
         let window_size = Vec2::new(window.width() as f32, window.height() as f32);
         let screen_center = window_size / 2.0;
 
-        let difference =screen_center - cursor_position;
+        let difference = screen_center - cursor_position;
         let angle = difference.x.atan2(difference.y);
 
         transform.rotation = Quat::from_rotation_z(angle);
     }
 }
-

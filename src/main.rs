@@ -1,10 +1,9 @@
+pub mod bullets;
 pub mod components;
 pub mod grid;
 pub mod player;
-pub mod bullets;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
-
 
 fn main() {
     App::new()

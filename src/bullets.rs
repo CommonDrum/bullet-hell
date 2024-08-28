@@ -1,19 +1,19 @@
 // bullets.rs
-use bevy::prelude::*;
-use bevy::ecs::bundle::Bundle;
 use crate::components::*;
+use bevy::ecs::bundle::Bundle;
+use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 #[derive(Bundle)]
 pub struct BulletBundle {
-    transform: TransformBundle,
-    rigid_body: RigidBody,
-    collider: Collider,
-    velocity: Velocity,
-    mass_properties: ColliderMassProperties,
-    locked_axes: LockedAxes,
-    gravity: GravityScale,
-    bullet_marker: Bullet,
+    pub transform: TransformBundle,
+    pub rigid_body: RigidBody,
+    pub collider: Collider,
+    pub velocity: Velocity,
+    pub mass_properties: ColliderMassProperties,
+    pub locked_axes: LockedAxes,
+    pub gravity: GravityScale,
+    pub bullet_marker: Bullet,
 }
 
 impl Default for BulletBundle {
