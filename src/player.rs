@@ -1,15 +1,18 @@
 //player.rs
 
 use crate::components::*;
+use crate::bullets::*;
 use bevy::input::mouse::{MouseScrollUnit, MouseWheel};
+use bevy::window::PrimaryWindow;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
+
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, (camera_setup, place_player))
         .add_systems(
             Update,
-            (player_movement, camera_system, scroll_events, shoot),
+            (player_movement, camera_system, scroll_events, shoot, player_rotation),
         );
 }
 
@@ -46,7 +49,6 @@ fn player_movement(
 ) {
     if let Ok((mut controller, mut transform)) = player_query.get_single_mut() {
         let mut direction = Vec3::ZERO;
-        let mut rotation_direction = 0.0;
 
         for key in keyboard_input.get_pressed() {
             match key {
@@ -54,8 +56,6 @@ fn player_movement(
                 KeyCode::ArrowRight | KeyCode::KeyD => direction += Vec3::new(1.0, 0.0, 0.0),
                 KeyCode::ArrowUp | KeyCode::KeyW => direction += Vec3::new(0.0, 1.0, 0.0),
                 KeyCode::ArrowDown | KeyCode::KeyS => direction += Vec3::new(0.0, -1.0, 0.0),
-                KeyCode::KeyZ => rotation_direction += 1.0,
-                KeyCode::KeyX => rotation_direction -= 1.0,
                 _ => (),
             }
         }
@@ -68,44 +68,32 @@ fn player_movement(
         let movement = Some(Vec2::new(direction.x, direction.y) * speed * time.delta_seconds());
 
         controller.translation = movement;
-        transform.rotation *=
-            Quat::from_rotation_z(rotation_direction * 5.0 * time.delta_seconds());
     }
 }
 
 //TODO: Most of the variables need to be moved either
 // to resources or spawning function for different types of bullets.
+
 fn shoot(
     mut commands: Commands,
     player_transform_q: Query<&Transform, With<Player>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    time: Res<Time>,
 ) {
     let player_transform = player_transform_q.get_single().unwrap();
     let forward_direction = player_transform.rotation * Vec3::Y;
     let bullet_spawn_position = player_transform.translation + forward_direction * 60.0;
 
     let bullet_velocity = forward_direction * 500.0;
-    let fire_rate = 0.2;
+
     if keyboard_input.pressed(KeyCode::Space) {
-        if 1 == 1 {
-            commands
-                .spawn(Bullet)
-                .insert(TransformBundle::from(Transform::from_xyz(
-                    bullet_spawn_position.x,
-                    bullet_spawn_position.y,
-                    0.0,
-                )))
-                .insert(RigidBody::Dynamic)
-                .insert(Collider::ball(10.0 / 2.0))
-                .insert(Velocity {
+        commands.spawn(BulletBundle{
+            bullet_spawn_position,
+            Velocity {
                     linvel: Vec2::new(bullet_velocity.x, bullet_velocity.y),
                     angvel: 0.,
-                })
-                .insert(ColliderMassProperties::Density(0.2))
-                .insert(LockedAxes::ROTATION_LOCKED)
-                .insert(GravityScale(0.0));
-        }
+                },
+            ..Default::default()
+        });
     }
 }
 
@@ -145,3 +133,24 @@ fn scroll_events(
         }
     }
 }
+
+
+
+fn player_rotation(
+    mut q_transform: Query<&mut Transform, With<Player>>,
+    q_windows: Query<&Window, With<PrimaryWindow>>,
+) {
+    let mut transform = q_transform.get_single_mut().unwrap();
+    let window = q_windows.single();
+
+    if let Some(cursor_position) = window.cursor_position() {
+        let window_size = Vec2::new(window.width() as f32, window.height() as f32);
+        let screen_center = window_size / 2.0;
+
+        let difference =screen_center - cursor_position;
+        let angle = difference.x.atan2(difference.y);
+
+        transform.rotation = Quat::from_rotation_z(angle);
+    }
+}
+

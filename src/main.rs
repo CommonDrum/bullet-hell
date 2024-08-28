@@ -1,16 +1,10 @@
 pub mod components;
 pub mod grid;
 pub mod player;
-
-use bevy::input::mouse::{MouseScrollUnit, MouseWheel};
+pub mod bullets;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
-use components::*;
-use grid::*;
-use player::*;
 
-const MAP_SIZE: i32 = 50;
-const BACKGROUND_LAYER: f32 = -1.1;
 
 fn main() {
     App::new()
