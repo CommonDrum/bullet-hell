@@ -2,9 +2,10 @@ pub mod bullets;
 pub mod components;
 pub mod grid;
 pub mod player;
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+pub mod prelude;
+use crate::prelude::*;
 
+use bevy_rapier2d::prelude::*;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
@@ -14,3 +15,25 @@ fn main() {
         .insert_resource(Msaa::Off)
         .run();
 }
+
+
+#[derive(Component)]
+struct CoinTag;
+
+#[derive(Bundle)]
+struct CoinBundle {
+    sprite: SpriteBundle,
+    coin_tag: CoinTag,
+    collider: Collider,
+}
+
+impl Default for CoinBundle {
+    fn default() -> Self {
+        Self {
+            sprite: SpriteBundle::default(),
+            coin_tag: CoinTag,
+            collider: Collider::cuboid(10.0, 10.0),
+        }
+    }
+}
+

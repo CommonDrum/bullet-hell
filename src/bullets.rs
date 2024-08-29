@@ -1,6 +1,5 @@
 // bullets.rs
 use crate::components::*;
-use bevy::ecs::bundle::Bundle;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
@@ -14,6 +13,7 @@ pub struct BulletBundle {
     pub locked_axes: LockedAxes,
     pub gravity: GravityScale,
     pub bullet_marker: Bullet,
+    pub active: ActiveEvents
 }
 
 impl Default for BulletBundle {
@@ -30,6 +30,7 @@ impl Default for BulletBundle {
             locked_axes: LockedAxes::ROTATION_LOCKED,
             gravity: GravityScale(0.0),
             bullet_marker: Bullet,
+            active: ActiveEvents::COLLISION_EVENTS,
         }
     }
 }

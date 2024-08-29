@@ -17,6 +17,7 @@ pub(super) fn plugin(app: &mut App) {
                 scroll_events,
                 shoot,
                 player_rotation,
+                display_events,
             ),
         );
 }
@@ -158,5 +159,18 @@ fn player_rotation(
         let angle = difference.x.atan2(difference.y);
 
         transform.rotation = Quat::from_rotation_z(angle);
+    }
+}
+
+fn display_events(
+    mut collision_events: EventReader<CollisionEvent>,
+    mut contact_force_events: EventReader<ContactForceEvent>,
+) {
+    for collision_event in collision_events.read() {
+        println!("Received collision event: {:?}", collision_event);
+    }
+
+    for contact_force_event in contact_force_events.read() {
+        println!("Received contact force event: {:?}", contact_force_event);
     }
 }
