@@ -165,12 +165,15 @@ fn player_rotation(
 fn display_events(
     mut collision_events: EventReader<CollisionEvent>,
     mut contact_force_events: EventReader<ContactForceEvent>,
+    mut commands: Commands,
 ) {
     for collision_event in collision_events.read() {
-        println!("Received collision event: {:?}", collision_event);
+        if let CollisionEvent::Started(entity1, entity2, _flags) = collision_event {
+            println!("Collision started between Entity {:?} and Entity {:?}", entity1, entity2);
+            commands.entity(*entity2).despawn();
+        }
     }
 
-    for contact_force_event in contact_force_events.read() {
-        println!("Received contact force event: {:?}", contact_force_event);
-    }
 }
+
+
