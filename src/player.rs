@@ -1,5 +1,4 @@
 //player.rs
-
 use crate::bullets::*;
 use crate::components::*;
 use bevy::prelude::*;
@@ -11,7 +10,6 @@ pub(super) fn plugin(app: &mut App) {
         .add_systems(Update, (player_movement, shoot, player_rotation));
 }
 
-//TODO make the values here into constants also maybe put input handeling into separate file
 fn place_player(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn(Player)
@@ -62,9 +60,6 @@ fn player_movement(
     }
 }
 
-//TODO: Most of the variables need to be moved either
-// to resources or spawning function for different types of bullets.
-
 fn shoot(
     mut commands: Commands,
     player_transform_q: Query<&Transform, With<Player>>,
@@ -107,21 +102,5 @@ fn player_rotation(
         let angle = difference.x.atan2(difference.y);
 
         transform.rotation = Quat::from_rotation_z(angle);
-    }
-}
-
-fn display_events(
-    mut collision_events: EventReader<CollisionEvent>,
-    mut contact_force_events: EventReader<ContactForceEvent>,
-    mut commands: Commands,
-) {
-    for collision_event in collision_events.read() {
-        if let CollisionEvent::Started(entity1, entity2, _flags) = collision_event {
-            println!(
-                "Collision started between Entity {:?} and Entity {:?}",
-                entity1, entity2
-            );
-            commands.entity(*entity2).despawn();
-        }
     }
 }

@@ -1,5 +1,4 @@
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use crate::prelude::*;
 
 pub const BASIC_SIZE_IN_VIEWPORT: f32 = 50.0;
 const BACKGROUND_LAYER: f32 = -1.1;
@@ -42,6 +41,7 @@ fn place_background(mut commands: Commands, asset_server: Res<AssetServer>) {
                     )))
                     .insert(RigidBody::KinematicPositionBased)
                     .insert(Collider::cuboid(25.0, 25.0))
+                    .insert(Health(100.0))
                     .insert(LockedAxes::TRANSLATION_LOCKED);
             } else {
                 commands
