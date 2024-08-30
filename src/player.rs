@@ -2,28 +2,13 @@
 
 use crate::bullets::*;
 use crate::components::*;
-use bevy::input::mouse::{MouseScrollUnit, MouseWheel};
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use bevy_rapier2d::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Startup, (camera_setup, place_player))
-        .add_systems(
-            Update,
-            (
-                player_movement,
-                camera_system,
-                scroll_events,
-                shoot,
-                player_rotation,
-                display_events,
-            ),
-        );
-}
-
-fn camera_setup(mut commands: Commands) {
-    commands.spawn(Camera2dBundle::default());
+    app.add_systems(Startup, place_player)
+        .add_systems(Update, (player_movement, shoot, player_rotation));
 }
 
 //TODO make the values here into constants also maybe put input handeling into separate file
@@ -107,43 +92,6 @@ fn shoot(
     }
 }
 
-fn camera_system(
-    mut param_set: ParamSet<(
-        Query<&mut Transform, With<Camera>>,
-        Query<&Transform, With<Player>>,
-    )>,
-) {
-    //This is a very nice way to see how borrow checker works. I first have to get the value and
-    //drop the reference and move to the other mutable reference.
-    let player_translation = {
-        let binding_1 = param_set.p1();
-        let player_transform = binding_1.get_single().unwrap();
-        player_transform.translation
-    };
-
-    let mut binding_0 = param_set.p0();
-    let mut camera_transform = binding_0.get_single_mut().unwrap();
-    camera_transform.translation = player_translation;
-}
-
-fn scroll_events(
-    mut evr_scroll: EventReader<MouseWheel>,
-    mut query: Query<&mut OrthographicProjection, With<Camera>>,
-) {
-    for ev in evr_scroll.read() {
-        let scroll_amount = match ev.unit {
-            MouseScrollUnit::Line => ev.y,
-            MouseScrollUnit::Pixel => ev.y * 0.1,
-        };
-
-        for mut projection in query.iter_mut() {
-            let mut log_scale = projection.scale.ln();
-            log_scale -= scroll_amount * 0.1;
-            projection.scale = log_scale.exp();
-        }
-    }
-}
-
 fn player_rotation(
     mut q_transform: Query<&mut Transform, With<Player>>,
     q_windows: Query<&Window, With<PrimaryWindow>>,
@@ -169,11 +117,11 @@ fn display_events(
 ) {
     for collision_event in collision_events.read() {
         if let CollisionEvent::Started(entity1, entity2, _flags) = collision_event {
-            println!("Collision started between Entity {:?} and Entity {:?}", entity1, entity2);
+            println!(
+                "Collision started between Entity {:?} and Entity {:?}",
+                entity1, entity2
+            );
             commands.entity(*entity2).despawn();
         }
     }
-
 }
-
-

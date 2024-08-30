@@ -1,4 +1,5 @@
 pub mod bullets;
+pub mod camera;
 pub mod components;
 pub mod grid;
 pub mod player;
@@ -11,7 +12,12 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(101.0))
         .add_plugins(RapierDebugRenderPlugin::default())
-        .add_plugins((grid::plugin, player::plugin))
+        .add_plugins((
+            camera::plugin,
+            grid::plugin,
+            player::plugin,
+            bullets::plugin,
+        ))
         .insert_resource(Msaa::Off)
         .run();
 }
