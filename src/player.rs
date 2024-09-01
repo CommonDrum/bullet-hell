@@ -1,9 +1,7 @@
 //player.rs
 use crate::bullets::*;
-use crate::components::*;
-use bevy::prelude::*;
+use crate::prelude::*;
 use bevy::window::PrimaryWindow;
-use bevy_rapier2d::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, place_player)
@@ -32,11 +30,11 @@ fn place_player(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 fn player_movement(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut player_query: Query<(&mut KinematicCharacterController, &mut Transform), With<Player>>,
+    mut player_query: Query<&mut KinematicCharacterController, With<Player>>,
     speed_query: Query<&Speed, With<Player>>,
     time: Res<Time>,
 ) {
-    if let Ok((mut controller, mut transform)) = player_query.get_single_mut() {
+    if let Ok(mut controller) = player_query.get_single_mut() {
         let mut direction = Vec3::ZERO;
 
         for key in keyboard_input.get_pressed() {

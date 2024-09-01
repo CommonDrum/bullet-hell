@@ -65,5 +65,3 @@ fn place_background(mut commands: Commands, asset_server: Res<AssetServer>) {
         }
     }
 }
-
-

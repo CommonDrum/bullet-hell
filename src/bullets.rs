@@ -1,6 +1,4 @@
-use crate::components::*;
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use crate::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, (handle_collision,));
@@ -37,11 +35,10 @@ impl Default for BulletBundle {
     }
 }
 
-
 fn handle_collision(
     mut collision_events: EventReader<CollisionEvent>,
     mut commands: Commands,
-    health_q: Query<&Health>, 
+    health_q: Query<&Health>,
 ) {
     for collision_event in collision_events.read() {
         if let CollisionEvent::Started(entity1, entity2, _flags) = collision_event {
@@ -54,4 +51,3 @@ fn handle_collision(
         }
     }
 }
-

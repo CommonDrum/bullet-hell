@@ -1,6 +1,7 @@
 pub mod bullets;
 pub mod camera;
 pub mod components;
+pub mod enemies;
 pub mod grid;
 pub mod player;
 pub mod prelude;
@@ -17,6 +18,7 @@ fn main() {
             grid::plugin,
             player::plugin,
             bullets::plugin,
+            enemies::plugin,
         ))
         .insert_resource(Msaa::Off)
         .run();
