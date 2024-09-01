@@ -36,12 +36,15 @@ impl Default for EnemyBundle {
     }
 }
 
-fn spawn_default_enemy(commands: &mut Commands) {
-    commands.spawn(EnemyBundle {
-        ..Default::default()
-    });
+fn spawn_default_enemy(commands: &mut Commands, asset_server: Res<AssetServer>) {
+    let texture: Handle<Image> = asset_server.load("sprites/Soldier 1/soldier1_gun.png");
+    commands
+        .spawn(EnemyBundle {
+            ..Default::default()
+        })
+        .insert(texture);
 }
 
-fn place_enemy_debug(mut commands: Commands) {
-    spawn_default_enemy(&mut commands);
+fn place_enemy_debug(mut commands: Commands, asset_server: Res<AssetServer>) {
+    spawn_default_enemy(&mut commands, asset_server);
 }
