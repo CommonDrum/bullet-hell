@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use rand::Rng;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, place_enemy_debug);
@@ -40,15 +41,24 @@ impl Default for EnemyBundle {
     }
 }
 
-fn spawn_default_enemy(commands: &mut Commands, asset_server: Res<AssetServer>) {
+fn spawn_default_enemy(commands: &mut Commands, asset_server: &Res<AssetServer>, position:  Vec3) {
     let texture: Handle<Image> = asset_server.load("sprites/Soldier 1/soldier1_gun.png");
     commands
         .spawn(EnemyBundle {
             ..Default::default()
         })
+        .insert(TransformBundle::from(Transform::from_xyz(position.x, position.y, position.z)))
         .insert(texture);
 }
 
 fn place_enemy_debug(mut commands: Commands, asset_server: Res<AssetServer>) {
-    spawn_default_enemy(&mut commands, asset_server);
+    let mut rng = rand::thread_rng();
+    
+    for _ in 0..5{
+        let x = rng.gen_range(50.0..400.0);
+        let y = rng.gen_range(50.0..400.0);
+
+        spawn_default_enemy(&mut commands, &asset_server, Vec3::new(x,y,0.0));
+    }
+
 }
