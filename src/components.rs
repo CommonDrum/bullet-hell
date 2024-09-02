@@ -17,3 +17,12 @@ pub struct Speed(pub f32);
 
 #[derive(Component)]
 pub struct Damage(pub f32);
+
+#[derive(Component)]
+pub enum AiMode {
+    Passive,
+    ChasingPlayer,
+}
+
+#[derive(Component)]
+pub struct Destination(pub Vec3);

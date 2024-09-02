@@ -13,13 +13,15 @@ pub struct EnemyBundle {
     pub collider: Collider,
     pub controler: KinematicCharacterController,
     pub enemy_marker: Enemy,
+    pub ai_mode: AiMode,
+    pub destination: Destination,
 }
 
 impl Default for EnemyBundle {
     fn default() -> Self {
         Self {
             health: Health(100.0),
-            speed: Speed(400.0),
+            speed: Speed(80.0),
             sprite_bundle: SpriteBundle {
                 transform: Transform::from_xyz(0.0, 200.0, 0.0),
                 sprite: Sprite {
@@ -32,6 +34,8 @@ impl Default for EnemyBundle {
             collider: Collider::ball(10.0 / 2.0),
             controler: KinematicCharacterController::default(),
             enemy_marker: Enemy,
+            ai_mode: AiMode::Passive,
+            destination: Destination(Vec3::new(0.0, 200.0, 0.0)),
         }
     }
 }

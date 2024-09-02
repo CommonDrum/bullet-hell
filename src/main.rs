@@ -1,3 +1,4 @@
+pub mod ai;
 pub mod bullets;
 pub mod camera;
 pub mod components;
@@ -19,6 +20,7 @@ fn main() {
             player::plugin,
             bullets::plugin,
             enemies::plugin,
+            ai::plugin,
         ))
         .insert_resource(Msaa::Off)
         .run();
