@@ -1,8 +1,11 @@
 use crate::prelude::*;
 use rand::Rng;
 
+use crate::ai;
+
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Startup, place_enemy_debug);
+    app.add_plugins(ai::plugin)
+        .add_systems(Startup, place_enemy_debug);
 }
 
 #[derive(Bundle)]
@@ -54,9 +57,9 @@ fn spawn_default_enemy(commands: &mut Commands, asset_server: &Res<AssetServer>,
 fn place_enemy_debug(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut rng = rand::thread_rng();
     
-    for _ in 0..5{
-        let x = rng.gen_range(50.0..400.0);
-        let y = rng.gen_range(50.0..400.0);
+    for _ in 0..1000{
+        let x = rng.gen_range(-500.0..500.0);
+        let y = rng.gen_range(-500.0..500.0);
 
         spawn_default_enemy(&mut commands, &asset_server, Vec3::new(x,y,0.0));
     }

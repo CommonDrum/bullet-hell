@@ -18,7 +18,7 @@ fn process_passive_enemies(
     >,
     time: Res<Time>,
 ) {
-    let move_radius = 400.0;
+    let move_radius = 1000.0;
 
     for (mut controller, speed, mut destination, ai_mode, transform) in query.iter_mut() {
         if let AiMode::Passive = ai_mode {
@@ -47,7 +47,7 @@ fn process_passive_enemies(
 fn random_point_within_radius(center: Vec3, radius: f32) -> Vec3 {
     let mut rng = rand::thread_rng();
     let angle = rng.gen_range(0.0..std::f32::consts::PI * 2.0);
-    let distance = rng.gen_range(50.0..radius);
+    let distance = rng.gen_range(-500.0..radius);
     let x_offset = distance * angle.cos();
     let y_offset = distance * angle.sin();
     Vec3::new(center.x + x_offset, center.y + y_offset, center.z)

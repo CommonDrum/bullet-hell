@@ -20,7 +20,6 @@ fn main() {
             player::plugin,
             bullets::plugin,
             enemies::plugin,
-            ai::plugin,
         ))
         .insert_resource(Msaa::Off)
         .run();
