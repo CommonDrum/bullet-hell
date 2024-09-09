@@ -62,6 +62,7 @@ fn shoot(
     mut commands: Commands,
     player_transform_q: Query<&Transform, With<Player>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
+    buttons: Res<ButtonInput<MouseButton>>,
 ) {
     let player_transform = player_transform_q.get_single().unwrap();
     let forward_direction = player_transform.rotation * Vec3::Y;
@@ -69,7 +70,7 @@ fn shoot(
 
     let bullet_velocity = forward_direction * 500.0;
 
-    if keyboard_input.pressed(KeyCode::Space) {
+    if keyboard_input.pressed(KeyCode::Space) | buttons.just_pressed(MouseButton::Left) {
         commands.spawn(BulletBundle {
             transform: TransformBundle::from(Transform::from_xyz(
                 bullet_spawn_position.x,

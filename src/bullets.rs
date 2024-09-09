@@ -14,6 +14,7 @@ pub struct BulletBundle {
     pub gravity: GravityScale,
     pub bullet_marker: Bullet,
     pub active: ActiveEvents,
+    pub damage: Damage,
 }
 
 impl Default for BulletBundle {
@@ -31,6 +32,7 @@ impl Default for BulletBundle {
             gravity: GravityScale(0.0),
             bullet_marker: Bullet,
             active: ActiveEvents::COLLISION_EVENTS,
+            damage: Damage(10.0),
         }
     }
 }
@@ -40,15 +42,23 @@ impl Default for BulletBundle {
 fn handle_collision(
     mut collision_events: EventReader<CollisionEvent>,
     mut commands: Commands,
-    health_q: Query<&Health>,
+    damage_q: Query<&Damage>,
+    mut health_q: Query<&mut Health>,
     bullet_q: Query<&Bullet>,
 ) {
     for collision_event in collision_events.read() {
         if let CollisionEvent::Started(entity1, entity2, _flags) = collision_event {
-            if let Ok(health) = health_q.get(*entity1) {
+            if let Ok(mut health) = health_q.get_mut(*entity1) {
+                if let Ok(damage) = damage_q.get(*entity2){
+                    health.0 -= damage.0;
+                }
                 println!("Entity1 has Health: {}", health.0);
-            } else {
-                println!("Entity1 does not have Health");
+
+            } else if let Ok(mut health) = health_q.get_mut(*entity2){
+                if let Ok(damage) = damage_q.get(*entity1){
+                    health.0 -= damage.0;
+                }
+                println!("Entity2 has Health: {}", health.0);
             }
             if let Ok(bullet) = bullet_q.get(*entity2){
                 commands.entity(*entity2).despawn();
