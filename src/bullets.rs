@@ -35,10 +35,13 @@ impl Default for BulletBundle {
     }
 }
 
+//TODO: it works now because only bullets send collision events. Make it so when other entiteis
+//also want to send them it works.
 fn handle_collision(
     mut collision_events: EventReader<CollisionEvent>,
     mut commands: Commands,
     health_q: Query<&Health>,
+    bullet_q: Query<&Bullet>,
 ) {
     for collision_event in collision_events.read() {
         if let CollisionEvent::Started(entity1, entity2, _flags) = collision_event {
@@ -47,7 +50,11 @@ fn handle_collision(
             } else {
                 println!("Entity1 does not have Health");
             }
-            commands.entity(*entity2).despawn();
+            if let Ok(bullet) = bullet_q.get(*entity2){
+                commands.entity(*entity2).despawn();
+            } else {
+                commands.entity(*entity1).despawn();
+            }
         }
     }
 }

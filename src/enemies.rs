@@ -57,7 +57,7 @@ fn spawn_default_enemy(commands: &mut Commands, asset_server: &Res<AssetServer>,
 fn place_enemy_debug(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut rng = rand::thread_rng();
     
-    for _ in 0..1000{
+    for _ in 0..10{
         let x = rng.gen_range(-500.0..500.0);
         let y = rng.gen_range(-500.0..500.0);
 

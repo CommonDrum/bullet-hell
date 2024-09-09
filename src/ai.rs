@@ -5,11 +5,14 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, process_passive_enemies);
 }
 
+
+
+
 fn process_passive_enemies(
     mut query: Query<
         (
             &mut KinematicCharacterController,
-            &Speed,
+            &Speed, 
             &mut Destination,
             &AiMode,
             &Transform,
@@ -18,7 +21,7 @@ fn process_passive_enemies(
     >,
     time: Res<Time>,
 ) {
-    let move_radius = 1000.0;
+    let move_radius = 100.0;
 
     for (mut controller, speed, mut destination, ai_mode, transform) in query.iter_mut() {
         if let AiMode::Passive = ai_mode {
@@ -31,7 +34,7 @@ fn process_passive_enemies(
             let distance =
                 Vec3::new(current_position.x, current_position.y, 0.0).distance(destination.0);
 
-            if distance > 2.0 {
+            if distance > 20.0 {
                 let movement =
                     Some(Vec2::new(direction.x, direction.y) * speed.0 * time.delta_seconds());
                 controller.translation = movement;
@@ -47,7 +50,7 @@ fn process_passive_enemies(
 fn random_point_within_radius(center: Vec3, radius: f32) -> Vec3 {
     let mut rng = rand::thread_rng();
     let angle = rng.gen_range(0.0..std::f32::consts::PI * 2.0);
-    let distance = rng.gen_range(-500.0..radius);
+    let distance = rng.gen_range(-radius..radius);
     let x_offset = distance * angle.cos();
     let y_offset = distance * angle.sin();
     Vec3::new(center.x + x_offset, center.y + y_offset, center.z)
