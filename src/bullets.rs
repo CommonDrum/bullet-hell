@@ -71,12 +71,13 @@ fn handle_collision(
 
 //I don't have an idea on where else to put it. I think only bullets will have damage
 //TODO: move the substract logic to this and make it triggered with an event
+//I think that the bullt might applly damage by sending an event and this will process it.
 
 fn damage_system(
-    mut query: Query<(Entity, &mut Health)>, // Entity is copied, so no need for mut
+    query: Query<(Entity, &Health)>, // Entity is copied, so no need for mut
     mut commands: Commands,                  // Commands to handle despawning
 ){
-    for (entity, mut health) in &mut query {
+    for (entity, health) in & query {
         if health.0 <= 0.0 {
             commands.entity(entity).despawn(); // Despawn the entity when health is <= 0
         }
