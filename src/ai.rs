@@ -6,9 +6,6 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, process_passive_enemies);
 }
 
-
-
-
 fn process_passive_enemies(
     mut query: Query<
         (
@@ -23,6 +20,7 @@ fn process_passive_enemies(
     time: Res<Time>,
 ) {
     let move_radius = 100.0;
+    let min_proximity = 20.0;
 
     for (mut controller, speed, mut destination, ai_mode, transform) in query.iter_mut() {
         if let AiMode::Passive = ai_mode {
@@ -35,7 +33,7 @@ fn process_passive_enemies(
             let distance =
                 Vec3::new(current_position.x, current_position.y, 0.0).distance(destination.0);
 
-            if distance > 20.0 {
+            if distance > min_proximity {
                 let movement =
                     Some(Vec2::new(direction.x, direction.y) * speed.0 * time.delta_seconds());
                 controller.translation = movement;

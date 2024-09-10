@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Update, (handle_collision,));
+    app.add_systems(Update, (handle_collision, damage_system));
 }
 #[derive(Bundle)]
 pub struct BulletBundle {
@@ -68,3 +68,18 @@ fn handle_collision(
         }
     }
 }
+
+//I don't have an idea on where else to put it. I think only bullets will have damage
+//TODO: move the substract logic to this and make it triggered with an event
+
+fn damage_system(
+    mut query: Query<(Entity, &mut Health)>, // Entity is copied, so no need for mut
+    mut commands: Commands,                  // Commands to handle despawning
+){
+    for (entity, mut health) in &mut query {
+        if health.0 <= 0.0 {
+            commands.entity(entity).despawn(); // Despawn the entity when health is <= 0
+        }
+    }
+}
+
