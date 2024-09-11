@@ -23,7 +23,7 @@ fn place_player(mut commands: Commands, asset_server: Res<AssetServer>) {
         })
         .insert(TransformBundle::from(Transform::from_xyz(0.0, 100.0, 0.0)))
         .insert(RigidBody::KinematicPositionBased)
-        .insert(Collider::ball(100.0 / 2.0))
+        .insert(Collider::ball(40.0))
         .insert(LockedAxes::TRANSLATION_LOCKED)
         .insert(KinematicCharacterController::default());
 }

@@ -26,3 +26,6 @@ pub enum AiMode {
 
 #[derive(Component)]
 pub struct Destination(pub Vec3);
+
+#[derive(Event)]
+pub struct DamageEvent(pub Entity, pub Damage);

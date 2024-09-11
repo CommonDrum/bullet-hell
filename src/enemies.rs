@@ -35,7 +35,7 @@ impl Default for EnemyBundle {
                 ..default()
             },
             rigid_body: RigidBody::KinematicPositionBased,
-            collider: Collider::ball(10.0 / 2.0),
+            collider: Collider::ball(40.0),
             controler: KinematicCharacterController::default(),
             enemy_marker: Enemy,
             ai_mode: AiMode::Passive,

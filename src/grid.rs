@@ -17,6 +17,7 @@ pub fn get_viewport_cords(x: i32, y: i32) -> (f32, f32) {
     )
 }
 
+//TODO: Create a tile bundle and functions to create each type of tile.
 fn place_background(mut commands: Commands, asset_server: Res<AssetServer>) {
     for y in -MAP_SIZE..=MAP_SIZE {
         for x in -MAP_SIZE..=MAP_SIZE {
@@ -41,7 +42,6 @@ fn place_background(mut commands: Commands, asset_server: Res<AssetServer>) {
                     )))
                     .insert(RigidBody::KinematicPositionBased)
                     .insert(Collider::cuboid(25.0, 25.0))
-                    .insert(Health(100.0))
                     .insert(LockedAxes::TRANSLATION_LOCKED);
             } else {
                 commands

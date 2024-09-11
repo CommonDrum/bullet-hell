@@ -1,5 +1,13 @@
 use crate::prelude::*;
 
+macro_rules! despawn_if_bullet {
+    ($entity:expr, $commands:expr, $bullet_q:expr) => {
+        if $bullet_q.get($entity).is_ok() {
+            $commands.entity($entity).despawn();
+        }
+    };
+}
+
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, (handle_collision, damage_system));
 }
@@ -60,18 +68,13 @@ fn handle_collision(
                 }
                 println!("Entity2 has Health: {}", health.0);
             }
-            if let Ok(bullet) = bullet_q.get(*entity2){
-                commands.entity(*entity2).despawn();
-            } else {
-                commands.entity(*entity1).despawn();
-            }
-        }
+            despawn_if_bullet!(*entity1, commands, bullet_q);
+            despawn_if_bullet!(*entity2, commands, bullet_q);        }
     }
 }
 
 //I don't have an idea on where else to put it. I think only bullets will have damage
 //TODO: move the substract logic to this and make it triggered with an event
-//I think that the bullt might applly damage by sending an event and this will process it.
 
 fn damage_system(
     query: Query<(Entity, &Health)>, // Entity is copied, so no need for mut
@@ -83,4 +86,5 @@ fn damage_system(
         }
     }
 }
+
 
