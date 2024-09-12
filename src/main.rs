@@ -8,7 +8,6 @@ pub mod player;
 pub mod prelude;
 use crate::prelude::*;
 
-use bevy_rapier2d::prelude::*;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))

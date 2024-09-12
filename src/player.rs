@@ -86,7 +86,7 @@ fn player_rotation(
     let window = q_windows.single();
 
     if let Some(cursor_position) = window.cursor_position() {
-        let window_size = Vec2::new(window.width() as f32, window.height() as f32);
+        let window_size = Vec2::new(window.width(), window.height());
         let screen_center = window_size / 2.0;
 
         let difference = screen_center - cursor_position;
