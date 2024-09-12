@@ -18,7 +18,6 @@ pub struct EnemyBundle {
     pub controler: KinematicCharacterController,
     pub enemy_marker: Enemy,
     pub ai_mode: AiMode,
-    pub destination: Destination,
 }
 
 impl Default for EnemyBundle {
@@ -39,7 +38,6 @@ impl Default for EnemyBundle {
             controler: KinematicCharacterController::default(),
             enemy_marker: Enemy,
             ai_mode: AiMode::Passive,
-            destination: Destination(Vec3::new(0.0, 200.0, 0.0)),
         }
     }
 }
@@ -59,9 +57,9 @@ fn spawn_default_enemy(commands: &mut Commands, asset_server: &Res<AssetServer>,
 fn place_enemy_debug(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut rng = rand::thread_rng();
 
-    for _ in 0..10 {
-        let x = rng.gen_range(-500.0..500.0);
-        let y = rng.gen_range(-500.0..500.0);
+    for _ in 0..1000 {
+        let x = rng.gen_range(-2000.0..2000.0);
+        let y = rng.gen_range(-2000.0..2000.0);
 
         spawn_default_enemy(&mut commands, &asset_server, Vec3::new(x, y, 0.0));
     }

@@ -18,7 +18,7 @@ pub struct Speed(pub f32);
 #[derive(Component)]
 pub struct Damage(pub f32);
 
-#[derive(Component)]
+#[derive(Component, PartialEq)]
 pub enum AiMode {
     Passive,
     ChasingPlayer,

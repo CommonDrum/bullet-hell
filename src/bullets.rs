@@ -64,7 +64,8 @@ fn handle_collision(
     bullet_q: Query<&Bullet>,
 ) {
     for collision_event in collision_events.read() {
-        if let CollisionEvent::Started(entity1, entity2, _flags) = collision_event { // Feels wierd
+        if let CollisionEvent::Started(entity1, entity2, _flags) = collision_event {
+            // Feels wierd
             apply_damage(*entity1, *entity2, &damage_q, &mut health_q);
             apply_damage(*entity2, *entity1, &damage_q, &mut health_q);
             despawn_if_bullet(*entity1, &mut commands, &bullet_q);
