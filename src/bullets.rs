@@ -1,13 +1,5 @@
 use crate::prelude::*;
 
-macro_rules! despawn_if_bullet {
-    ($entity:expr, $commands:expr, $bullet_q:expr) => {
-        if $bullet_q.get($entity).is_ok() {
-            $commands.entity($entity).despawn();
-        }
-    };
-}
-
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, (handle_collision, damage_system));
 }
@@ -30,7 +22,7 @@ impl Default for BulletBundle {
         Self {
             transform: TransformBundle::default(),
             rigid_body: RigidBody::Dynamic,
-            collider: Collider::ball(10.0 / 2.0),
+            collider: Collider::ball(1.0 / 2.0),
             velocity: Velocity {
                 linvel: Vec2::ZERO,
                 angvel: 0.0,
@@ -45,8 +37,25 @@ impl Default for BulletBundle {
     }
 }
 
-//TODO: it works now because only bullets send collision events. Make it so when other entiteis
-//also want to send them it works.
+fn apply_damage(
+    attacker: Entity,
+    target: Entity,
+    damage_q: &Query<&Damage>,
+    health_q: &mut Query<&mut Health>,
+) {
+    if let Ok(damage) = damage_q.get(attacker) {
+        if let Ok(mut health) = health_q.get_mut(target) {
+            health.0 -= damage.0;
+        }
+    }
+}
+
+fn despawn_if_bullet(entity: Entity, commands: &mut Commands, bullet_q: &Query<&Bullet>) {
+    if bullet_q.get(entity).is_ok() {
+        commands.entity(entity).despawn();
+    }
+}
+
 fn handle_collision(
     mut collision_events: EventReader<CollisionEvent>,
     mut commands: Commands,
@@ -55,36 +64,43 @@ fn handle_collision(
     bullet_q: Query<&Bullet>,
 ) {
     for collision_event in collision_events.read() {
-        if let CollisionEvent::Started(entity1, entity2, _flags) = collision_event {
-            if let Ok(mut health) = health_q.get_mut(*entity1) {
-                if let Ok(damage) = damage_q.get(*entity2){
-                    health.0 -= damage.0;
-                }
-                println!("Entity1 has Health: {}", health.0);
-
-            } else if let Ok(mut health) = health_q.get_mut(*entity2){
-                if let Ok(damage) = damage_q.get(*entity1){
-                    health.0 -= damage.0;
-                }
-                println!("Entity2 has Health: {}", health.0);
-            }
-            despawn_if_bullet!(*entity1, commands, bullet_q);
-            despawn_if_bullet!(*entity2, commands, bullet_q);        }
+        if let CollisionEvent::Started(entity1, entity2, _flags) = collision_event { // Feels wierd
+            apply_damage(*entity1, *entity2, &damage_q, &mut health_q);
+            apply_damage(*entity2, *entity1, &damage_q, &mut health_q);
+            despawn_if_bullet(*entity1, &mut commands, &bullet_q);
+            despawn_if_bullet(*entity2, &mut commands, &bullet_q);
+        }
     }
+}
+
+pub fn spawn_default_bullet(
+    commands: &mut Commands,
+    asset_server: &Res<AssetServer>,
+    position: Vec3,
+    velocity: Vec3,
+) {
+    let texture: Handle<Image> = asset_server.load("sprites/bullet.png");
+    commands
+        .spawn(BulletBundle {
+            ..Default::default()
+        })
+        .insert(TransformBundle::from(Transform::from_xyz(
+            position.x, position.y, position.z,
+        )))
+        .insert(Velocity {
+            linvel: Vec2::new(velocity.x, velocity.y),
+            angvel: 0.,
+        })
+        .insert(texture);
 }
 
 //I don't have an idea on where else to put it. I think only bullets will have damage
 //TODO: move the substract logic to this and make it triggered with an event
 
-fn damage_system(
-    query: Query<(Entity, &Health)>, // Entity is copied, so no need for mut
-    mut commands: Commands,                  // Commands to handle despawning
-){
-    for (entity, health) in & query {
+fn damage_system(query: Query<(Entity, &Health)>, mut commands: Commands) {
+    for (entity, health) in &query {
         if health.0 <= 0.0 {
-            commands.entity(entity).despawn(); // Despawn the entity when health is <= 0
+            commands.entity(entity).despawn();
         }
     }
 }
-
-

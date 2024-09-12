@@ -23,7 +23,7 @@ fn place_player(mut commands: Commands, asset_server: Res<AssetServer>) {
         })
         .insert(TransformBundle::from(Transform::from_xyz(0.0, 100.0, 0.0)))
         .insert(RigidBody::KinematicPositionBased)
-        .insert(Collider::ball(40.0))
+        .insert(Collider::ball(25.0))
         .insert(LockedAxes::TRANSLATION_LOCKED)
         .insert(KinematicCharacterController::default());
 }
@@ -63,29 +63,21 @@ fn shoot(
     player_transform_q: Query<&Transform, With<Player>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     buttons: Res<ButtonInput<MouseButton>>,
+    asset_server: Res<AssetServer>,
 ) {
     let player_transform = player_transform_q.get_single().unwrap();
     let forward_direction = player_transform.rotation * Vec3::Y;
-    let bullet_spawn_position = player_transform.translation + forward_direction * 60.0;
+    let bullet_spawn_position_1 = player_transform.translation + forward_direction * 60.0;
+    let bullet_spawn_position = Vec2::new(bullet_spawn_position_1.x, bullet_spawn_position_1.y);
+    let position = Vec3::new(bullet_spawn_position.x, bullet_spawn_position.y, 0.0);
 
     let bullet_velocity = forward_direction * 500.0;
 
     if keyboard_input.pressed(KeyCode::Space) | buttons.just_pressed(MouseButton::Left) {
-        commands.spawn(BulletBundle {
-            transform: TransformBundle::from(Transform::from_xyz(
-                bullet_spawn_position.x,
-                bullet_spawn_position.y,
-                0.0,
-            )),
-            velocity: Velocity {
-                linvel: Vec2::new(bullet_velocity.x, bullet_velocity.y),
-                angvel: 0.,
-            },
-            ..Default::default()
-        });
+        spawn_default_bullet(&mut commands, &asset_server, position, bullet_velocity);
+        {}
     }
 }
-
 fn player_rotation(
     mut q_transform: Query<&mut Transform, With<Player>>,
     q_windows: Query<&Window, With<PrimaryWindow>>,

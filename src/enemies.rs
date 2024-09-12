@@ -35,7 +35,7 @@ impl Default for EnemyBundle {
                 ..default()
             },
             rigid_body: RigidBody::KinematicPositionBased,
-            collider: Collider::ball(40.0),
+            collider: Collider::ball(25.0),
             controler: KinematicCharacterController::default(),
             enemy_marker: Enemy,
             ai_mode: AiMode::Passive,
@@ -44,24 +44,25 @@ impl Default for EnemyBundle {
     }
 }
 
-fn spawn_default_enemy(commands: &mut Commands, asset_server: &Res<AssetServer>, position:  Vec3) {
+fn spawn_default_enemy(commands: &mut Commands, asset_server: &Res<AssetServer>, position: Vec3) {
     let texture: Handle<Image> = asset_server.load("sprites/Soldier 1/soldier1_gun.png");
     commands
         .spawn(EnemyBundle {
             ..Default::default()
         })
-        .insert(TransformBundle::from(Transform::from_xyz(position.x, position.y, position.z)))
+        .insert(TransformBundle::from(Transform::from_xyz(
+            position.x, position.y, position.z,
+        )))
         .insert(texture);
 }
 
 fn place_enemy_debug(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut rng = rand::thread_rng();
-    
-    for _ in 0..10{
+
+    for _ in 0..10 {
         let x = rng.gen_range(-500.0..500.0);
         let y = rng.gen_range(-500.0..500.0);
 
-        spawn_default_enemy(&mut commands, &asset_server, Vec3::new(x,y,0.0));
+        spawn_default_enemy(&mut commands, &asset_server, Vec3::new(x, y, 0.0));
     }
-
 }

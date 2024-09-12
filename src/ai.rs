@@ -10,7 +10,7 @@ fn process_passive_enemies(
     mut query: Query<
         (
             &mut KinematicCharacterController,
-            &Speed, 
+            &Speed,
             &mut Destination,
             &AiMode,
             &Transform,
