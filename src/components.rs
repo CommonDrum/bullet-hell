@@ -29,3 +29,6 @@ pub struct Destination(pub Vec3);
 
 #[derive(Event)]
 pub struct DamageEvent(pub Entity, pub Damage);
+
+#[derive(Component)]
+pub struct DirectionArray(pub [f32; 8]);

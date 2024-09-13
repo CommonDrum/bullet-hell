@@ -18,6 +18,7 @@ pub struct EnemyBundle {
     pub controler: KinematicCharacterController,
     pub enemy_marker: Enemy,
     pub ai_mode: AiMode,
+    pub direction_array: DirectionArray,
 }
 
 impl Default for EnemyBundle {
@@ -38,6 +39,7 @@ impl Default for EnemyBundle {
             controler: KinematicCharacterController::default(),
             enemy_marker: Enemy,
             ai_mode: AiMode::Passive,
+            direction_array: DirectionArray([1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         }
     }
 }
