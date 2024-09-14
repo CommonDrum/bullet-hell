@@ -40,7 +40,10 @@ fn aggressive_ai(
    for (transform, mut direction_array) in set.p0().iter_mut() {
        let position = Vec2::new(transform.translation.x, transform.translation.y);
        let angle = angle_between_points(position, player_position);
-       direction_array.0[2] += 0.01;
+       let index = radians_to_index(angle + PI, direction_array.0.len());
+
+       direction_array.0[index] += 2.0;
+       normalize_array(&mut direction_array.0);
     }
 
 
@@ -57,16 +60,16 @@ fn max_element_and_index(arr: &[f32]) -> (f32, usize) {
 }
 
 
-fn radians_to_index(angle: f32, arr_size: usize) -> i32 {
+fn radians_to_index(angle: f32, arr_size: usize) -> usize {
     let segment_size = 2.0 * std::f32::consts::PI / arr_size as f32;
 
     for i in 0..arr_size {
-        if angle < segment_size * (i + 1) as f32 {
-            return i as i32;
+        if angle < segment_size * (i + 1) as f32  {
+            return i ;
         }
     }
 
-    (arr_size - 1) as i32
+    (arr_size - 1) 
 }
 
 fn index_to_radians(index: i32, arr_size: usize) -> f32 {
