@@ -5,6 +5,7 @@ pub mod components;
 pub mod enemies;
 pub mod grid;
 pub mod player;
+pub mod utils;
 pub mod prelude;
 use crate::prelude::*;
 
