@@ -39,7 +39,7 @@ impl Default for EnemyBundle {
             controler: KinematicCharacterController::default(),
             enemy_marker: Enemy,
             ai_mode: AiMode::Passive,
-            direction_array: DirectionArray([1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+            direction_array: DirectionArray([1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
         }
     }
 }
