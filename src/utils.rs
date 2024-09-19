@@ -2,7 +2,6 @@
 use crate::prelude::*;
 use std::f32::consts::PI;
 
-
 pub fn radians_to_index(angle: f32, arr_size: usize) -> usize {
     let mut angle = angle % (2.0 * PI);
     if angle < 0.0 {
@@ -38,8 +37,6 @@ pub fn angle_between_points(point1: Vec2, point2: Vec2) -> f32 {
     difference.y.atan2(difference.x)
 }
 
-
-
 pub fn round_raycast(
     rapier_context: &RapierContext,
     entity_position: Vec2,
@@ -66,10 +63,6 @@ pub fn round_raycast(
 
         print!("{}", hit_results[i]);
     }
-    println!("");
+    println!();
     hit_results
 }
-
-
-
-

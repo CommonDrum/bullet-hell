@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use crate::utils::*;
 
 #[derive(Component)]
 pub struct Player;
@@ -34,7 +33,6 @@ pub struct DamageEvent(pub Entity, pub Damage);
 #[derive(Component)]
 pub struct DirectionArray(pub [f32; 16]);
 
-
 impl DirectionArray {
     pub fn change_weight(&mut self, index: usize, value: f32) {
         let arr = &mut self.0;
@@ -52,5 +50,3 @@ impl DirectionArray {
         }
     }
 }
-
-

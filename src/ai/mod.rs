@@ -1,10 +1,15 @@
-
 // ai/mod.rs
 use crate::prelude::*;
 use crate::utils::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Update, (movement_system, (aggressive_ai, obstacle_avoidance_system).chain()));
+    app.add_systems(
+        Update,
+        (
+            movement_system,
+            (aggressive_ai, obstacle_avoidance_system).chain(),
+        ),
+    );
 }
 
 fn movement_system(
@@ -50,7 +55,6 @@ fn aggressive_ai(
     }
 }
 
-
 fn obstacle_avoidance_system(
     mut query: Query<(&Transform, &mut DirectionArray)>,
     rapier_context: Res<RapierContext>,
@@ -73,7 +77,6 @@ fn obstacle_avoidance_system(
     }
 }
 
-
 //TODO: No need for max element
 fn max_element_and_index(arr: &[f32]) -> (f32, usize) {
     assert!(!arr.is_empty(), "Array must not be empty");
@@ -83,5 +86,3 @@ fn max_element_and_index(arr: &[f32]) -> (f32, usize) {
         .map(|(index, &value)| (value, index))
         .expect("Array is unexpectedly empty")
 }
-
-
