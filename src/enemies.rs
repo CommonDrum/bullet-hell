@@ -39,7 +39,7 @@ impl Default for EnemyBundle {
             controler: KinematicCharacterController::default(),
             enemy_marker: Enemy,
             ai_mode: AiMode::Passive,
-            direction_array: DirectionArray([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
+            direction_array: DirectionArray([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
         }
     }
 }
@@ -59,7 +59,7 @@ fn spawn_default_enemy(commands: &mut Commands, asset_server: &Res<AssetServer>,
 fn place_enemy_debug(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut rng = rand::thread_rng();
 
-    for _ in 0..1 {
+    for _ in 0..10 {
         let x = rng.gen_range(-20.0..200.0);
         let y = rng.gen_range(-200.0..200.0);
 

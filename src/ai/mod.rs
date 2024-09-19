@@ -1,10 +1,10 @@
 
 // ai/mod.rs
 use crate::prelude::*;
-use crate::utils::{angle_between_points, index_to_radians, normalize_array, radians_to_index};
+use crate::utils::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Update, (movement_system, aggressive_ai));
+    app.add_systems(Update, (movement_system, (aggressive_ai, obstacle_avoidance_system).chain()));
 }
 
 fn movement_system(
@@ -12,11 +12,12 @@ fn movement_system(
         &mut KinematicCharacterController,
         &Speed,
         &Transform,
-        &DirectionArray,
+        &mut DirectionArray,
     )>,
     time: Res<Time>,
 ) {
-    for (mut controller, speed, _transform, direction_array) in query.iter_mut() {
+    for (mut controller, speed, _transform, mut direction_array) in query.iter_mut() {
+        normalize_array(&mut direction_array.0);
         let (_, max_index) = max_element_and_index(&direction_array.0);
         let arr_size = direction_array.0.len();
         let angle = index_to_radians(max_index, arr_size);
@@ -45,11 +46,35 @@ fn aggressive_ai(
         let position = Vec2::new(transform.translation.x, transform.translation.y);
         let angle = angle_between_points(position, player_position);
         let index = radians_to_index(angle, direction_array.0.len());
-        direction_array.0[index] += 2.0;
-        normalize_array(&mut direction_array.0);
+        direction_array.change_weight(index, 1.0);
     }
 }
 
+
+fn obstacle_avoidance_system(
+    mut query: Query<(&Transform, &mut DirectionArray)>,
+    rapier_context: Res<RapierContext>,
+) {
+    for (transform, mut direction_array) in query.iter_mut() {
+        let position = Vec2::new(transform.translation.x, transform.translation.y);
+        let arr_size = direction_array.0.len();
+
+        if arr_size == 0 {
+            continue; // Safeguard against empty DirectionArray
+        }
+
+        let is_dir_obstructed = round_raycast(&rapier_context, position, arr_size, 10.0, 50.0);
+
+        for (i, is_obstructed) in is_dir_obstructed.iter().enumerate() {
+            if *is_obstructed {
+                direction_array.change_weight(i, -1.0);
+            }
+        }
+    }
+}
+
+
+//TODO: No need for max element
 fn max_element_and_index(arr: &[f32]) -> (f32, usize) {
     assert!(!arr.is_empty(), "Array must not be empty");
     arr.iter()
@@ -58,4 +83,5 @@ fn max_element_and_index(arr: &[f32]) -> (f32, usize) {
         .map(|(index, &value)| (value, index))
         .expect("Array is unexpectedly empty")
 }
+
 
