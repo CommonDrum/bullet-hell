@@ -1,7 +1,7 @@
 // ai/mod.rs
 use crate::prelude::*;
 use crate::utils::*;
-
+use std::f32::consts::PI;
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
@@ -16,19 +16,20 @@ fn movement_system(
     mut query: Query<(
         &mut KinematicCharacterController,
         &Speed,
-        &Transform,
+        &mut Transform,
         &mut DirectionArray,
     )>,
     time: Res<Time>,
 ) {
-    for (mut controller, speed, _transform, mut direction_array) in query.iter_mut() {
+    for (mut controller, speed, mut transform, mut direction_array) in query.iter_mut() {
         normalize_array(&mut direction_array.0);
         let (_, max_index) = max_element_and_index(&direction_array.0);
         let arr_size = direction_array.0.len();
         let angle = index_to_radians(max_index, arr_size);
         let movement = Vec2::new(angle.cos(), angle.sin());
         let velocity = movement * speed.0 * time.delta_seconds();
-        controller.translation = Some(velocity);
+        controller.translation = Some(velocity); 
+        transform.rotation = Quat::from_rotation_z(angle - PI/2.0);
     }
 }
 
@@ -62,11 +63,6 @@ fn obstacle_avoidance_system(
     for (transform, mut direction_array) in query.iter_mut() {
         let position = Vec2::new(transform.translation.x, transform.translation.y);
         let arr_size = direction_array.0.len();
-
-        if arr_size == 0 {
-            continue; // Safeguard against empty DirectionArray
-        }
-
         let is_dir_obstructed = round_raycast(&rapier_context, position, arr_size, 10.0, 50.0);
 
         for (i, is_obstructed) in is_dir_obstructed.iter().enumerate() {

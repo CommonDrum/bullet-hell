@@ -47,7 +47,7 @@ impl Default for EnemyBundle {
 }
 
 fn spawn_default_enemy(commands: &mut Commands, asset_server: &Res<AssetServer>, position: Vec3) {
-    let texture: Handle<Image> = asset_server.load("sprites/Soldier 1/soldier1_gun.png");
+    let texture: Handle<Image> = asset_server.load("sprites/Ants/ant1_v2.png");
     commands
         .spawn(EnemyBundle {
             ..Default::default()
@@ -68,3 +68,5 @@ fn place_enemy_debug(mut commands: Commands, asset_server: Res<AssetServer>) {
         spawn_default_enemy(&mut commands, &asset_server, Vec3::new(x, y, 0.0));
     }
 }
+
+
