@@ -50,3 +50,6 @@ impl DirectionArray {
         }
     }
 }
+
+#[derive(Component)]
+pub struct Melee(pub f32);

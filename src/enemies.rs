@@ -46,7 +46,7 @@ impl Default for EnemyBundle {
     }
 }
 
-fn spawn_default_enemy(commands: &mut Commands, asset_server: &Res<AssetServer>, position: Vec3) {
+fn spawn_ant(commands: &mut Commands, asset_server: &Res<AssetServer>, position: Vec3) {
     let texture: Handle<Image> = asset_server.load("sprites/Ants/ant1_v2.png");
     commands
         .spawn(EnemyBundle {
@@ -55,17 +55,18 @@ fn spawn_default_enemy(commands: &mut Commands, asset_server: &Res<AssetServer>,
         .insert(TransformBundle::from(Transform::from_xyz(
             position.x, position.y, position.z,
         )))
-        .insert(texture);
+        .insert(texture)
+        .insert(Melee(100.0));
 }
 
 fn place_enemy_debug(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut rng = rand::thread_rng();
 
-    for _ in 0..10 {
+    for _ in 0..1 {
         let x = rng.gen_range(-20.0..200.0);
         let y = rng.gen_range(-200.0..200.0);
 
-        spawn_default_enemy(&mut commands, &asset_server, Vec3::new(x, y, 0.0));
+        spawn_ant(&mut commands, &asset_server, Vec3::new(x, y, 0.0));
     }
 }
 

@@ -7,6 +7,7 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         (
             movement_system,
+            melee_damage,
             (aggressive_ai, obstacle_avoidance_system).chain(),
         ),
     );
@@ -55,6 +56,50 @@ fn aggressive_ai(
         direction_array.change_weight(index, 1.0);
     }
 }
+
+
+
+
+
+
+fn melee_damage(
+    mut set: ParamSet<(
+        Query<(&Transform, &mut Melee)>,
+        Query<(&Transform, &mut Health), With<Player>>,
+    )>,
+) {
+    let (player_position, mut player_health_value) = {
+        let mut player_query = set.p1();
+        let (player_transform, player_health) = player_query.get_single_mut().unwrap();
+        (
+            Vec2::new(
+                player_transform.translation.x,
+                player_transform.translation.y,
+            ),
+            player_health.0,
+        )
+    };
+
+    for (transform, melee) in set.p0().iter() {
+        let position = Vec2::new(transform.translation.x, transform.translation.y);
+        if (player_position - position).length() <= melee.0 {
+            player_health_value -= 10.0;
+        }
+    }
+
+    {
+        let mut player_query = set.p1();
+        let (_, mut player_health) = player_query.get_single_mut().unwrap();
+        player_health.0 = player_health_value;
+    }
+}
+
+
+
+
+
+
+
 
 fn obstacle_avoidance_system(
     mut query: Query<(&Transform, &mut DirectionArray)>,

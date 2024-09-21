@@ -37,6 +37,11 @@ pub fn angle_between_points(point1: Vec2, point2: Vec2) -> f32 {
     difference.y.atan2(difference.x)
 }
 
+pub fn distance_between_points(x1: f32, y1: f32, x2: f32, y2: f32) -> f32 {
+    ((x2 - x1).powi(2) + (y2 - y1).powi(2)).sqrt()
+}
+
+
 pub fn round_raycast(
     rapier_context: &RapierContext,
     entity_position: Vec2,
@@ -51,7 +56,6 @@ pub fn round_raycast(
         let angle = index_to_radians(i, arr_size);
         let ray_dir = Vec2::new(angle.cos(), angle.sin());
 
-        // Offset the start point to be outside the collider
         let start_point = entity_position + ray_dir * collider_radius;
 
         if rapier_context
@@ -61,8 +65,6 @@ pub fn round_raycast(
             hit_results[i] = true;
         }
 
-        print!("{}", hit_results[i]);
     }
-    println!();
     hit_results
 }
