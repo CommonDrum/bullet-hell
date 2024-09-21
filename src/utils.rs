@@ -41,7 +41,6 @@ pub fn distance_between_points(x1: f32, y1: f32, x2: f32, y2: f32) -> f32 {
     ((x2 - x1).powi(2) + (y2 - y1).powi(2)).sqrt()
 }
 
-
 pub fn round_raycast(
     rapier_context: &RapierContext,
     entity_position: Vec2,
@@ -64,7 +63,6 @@ pub fn round_raycast(
         {
             hit_results[i] = true;
         }
-
     }
     hit_results
 }

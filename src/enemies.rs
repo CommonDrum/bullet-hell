@@ -5,7 +5,8 @@ use crate::ai;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins(ai::plugin)
-        .add_systems(Startup, place_enemy_debug);
+        .add_systems(Startup, place_enemy_debug)
+        .add_systems(Update, melee_damage);
 }
 
 #[derive(Bundle)]
@@ -70,4 +71,34 @@ fn place_enemy_debug(mut commands: Commands, asset_server: Res<AssetServer>) {
     }
 }
 
+fn melee_damage(
+    mut set: ParamSet<(
+        Query<(&Transform, &mut Melee)>,
+        Query<(&Transform, &mut Health), With<Player>>,
+    )>,
+) {
+    let (player_position, mut player_health_value) = {
+        let mut player_query = set.p1();
+        let (player_transform, player_health) = player_query.get_single_mut().unwrap();
+        (
+            Vec2::new(
+                player_transform.translation.x,
+                player_transform.translation.y,
+            ),
+            player_health.0,
+        )
+    };
 
+    for (transform, melee) in set.p0().iter() {
+        let position = Vec2::new(transform.translation.x, transform.translation.y);
+        if (player_position - position).length() <= melee.0 {
+            player_health_value -= 10.0;
+        }
+    }
+
+    {
+        let mut player_query = set.p1();
+        let (_, mut player_health) = player_query.get_single_mut().unwrap();
+        player_health.0 = player_health_value;
+    }
+}
