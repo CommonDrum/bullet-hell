@@ -53,3 +53,20 @@ impl DirectionArray {
 
 #[derive(Component)]
 pub struct Melee(pub f32);
+
+#[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
+pub enum GameState {
+    #[default]
+    Game,
+    Splash,
+    Menu,
+    
+}
+
+
+#[derive(States, Default, Debug, Clone, PartialEq, Eq, Hash)]
+pub enum MyPausedState {
+    #[default]
+    Paused,
+    Running,
+}

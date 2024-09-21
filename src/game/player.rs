@@ -1,6 +1,6 @@
 //player.rs
-use crate::bullets::*;
-use crate::prelude::*;
+use crate::game::bullets::*;
+use crate::game::prelude::*;
 use bevy::window::PrimaryWindow;
 
 pub(super) fn plugin(app: &mut App) {

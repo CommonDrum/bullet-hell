@@ -1,7 +1,7 @@
-use crate::prelude::*;
+use crate::game::prelude::*;
 use rand::Rng;
 
-use crate::ai;
+use crate::game::ai;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins(ai::plugin)

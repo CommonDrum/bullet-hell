@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::game::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, (handle_collision, damage_system));

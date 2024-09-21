@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::game::prelude::*;
 
 pub const BASIC_SIZE_IN_VIEWPORT: f32 = 50.0;
 const BACKGROUND_LAYER: f32 = -1.1;

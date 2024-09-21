@@ -1,6 +1,6 @@
 // ai/mod.rs
-use crate::prelude::*;
-use crate::utils::*;
+use crate::game::prelude::*;
+use crate::game::utils::*;
 use std::f32::consts::PI;
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(

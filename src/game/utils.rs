@@ -1,5 +1,5 @@
 // utils.rs
-use crate::prelude::*;
+use crate::game::prelude::*;
 use std::f32::consts::PI;
 
 pub fn radians_to_index(angle: f32, arr_size: usize) -> usize {
@@ -11,16 +11,15 @@ pub fn radians_to_index(angle: f32, arr_size: usize) -> usize {
     index % arr_size
 }
 
+
 pub fn index_to_radians(index: usize, arr_size: usize) -> f32 {
-    if index >= arr_size {
-        panic!("Index out of bounds");
-    }
     let mut angle = (index as f32 / arr_size as f32) * 2.0 * PI;
     if angle > PI {
         angle -= 2.0 * PI;
     }
     angle
 }
+
 
 pub fn normalize_array(arr: &mut [f32]) {
     let min_val = arr.iter().cloned().fold(f32::INFINITY, f32::min);
@@ -66,3 +65,45 @@ pub fn round_raycast(
     }
     hit_results
 }
+
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::f32::consts::PI;
+
+    #[test]
+    fn test_radians_to_index_zero() {
+        let arr_size = 8;
+        let result = radians_to_index(0.0, arr_size);
+        assert_eq!(result, 0);
+    }
+
+    #[test]
+    fn test_radians_to_index_positive_angle() {
+        let arr_size = 8;
+        let result = radians_to_index(PI / 2.0, arr_size);
+        assert_eq!(result, 2);    }
+
+    #[test]
+    fn test_radians_to_index_full_circle() {
+        let arr_size = 8;
+        let result = radians_to_index(2.0 * PI, arr_size);
+        assert_eq!(result, 0);     }
+
+    #[test]
+    fn test_radians_to_index_negative_angle() {
+        let arr_size = 8;
+        let result = radians_to_index(-PI / 2.0, arr_size);
+        assert_eq!(result, 6); 
+    }
+
+    #[test]
+    fn test_radians_to_index_angle_greater_than_2pi() {
+        let arr_size = 4;
+        let result = radians_to_index(3.0 * PI, arr_size);
+        assert_eq!(result, 1);
+    }
+}
+

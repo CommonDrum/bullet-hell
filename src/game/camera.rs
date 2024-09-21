@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::game::prelude::*;
 use bevy::input::mouse::{MouseScrollUnit, MouseWheel};
 
 /* This is a camera plugin that uses player tag component to follow the player around.
@@ -6,7 +6,7 @@ use bevy::input::mouse::{MouseScrollUnit, MouseWheel};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, camera_setup)
-        .add_systems(Update, (camera_system, scroll_events));
+        .add_systems(Update, (camera_system, scroll_events).run_if(in_state(GameState::Game)));
 }
 
 fn camera_setup(mut commands: Commands) {
