@@ -1,7 +1,7 @@
 use crate::game::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Update, (handle_collision, damage_system));
+    app.add_systems(Update, (bullet_collision, damage_system));
 }
 #[derive(Bundle)]
 pub struct BulletBundle {
@@ -15,6 +15,7 @@ pub struct BulletBundle {
     pub bullet_marker: Bullet,
     pub active: ActiveEvents,
     pub damage: Damage,
+    pub sensor: Sensor,
 }
 
 impl Default for BulletBundle {
@@ -23,6 +24,7 @@ impl Default for BulletBundle {
             transform: TransformBundle::default(),
             rigid_body: RigidBody::Dynamic,
             collider: Collider::ball(1.0 / 2.0),
+            sensor: Sensor,
             velocity: Velocity {
                 linvel: Vec2::ZERO,
                 angvel: 0.0,
@@ -32,20 +34,8 @@ impl Default for BulletBundle {
             gravity: GravityScale(0.0),
             bullet_marker: Bullet,
             active: ActiveEvents::COLLISION_EVENTS,
-            damage: Damage(10.0),
-        }
-    }
-}
+            damage: Damage(1.0),
 
-fn apply_damage(
-    attacker: Entity,
-    target: Entity,
-    damage_q: &Query<&Damage>,
-    health_q: &mut Query<&mut Health>,
-) {
-    if let Ok(damage) = damage_q.get(attacker) {
-        if let Ok(mut health) = health_q.get_mut(target) {
-            health.0 -= damage.0;
         }
     }
 }
@@ -56,7 +46,7 @@ fn despawn_if_bullet(entity: Entity, commands: &mut Commands, bullet_q: &Query<&
     }
 }
 
-fn handle_collision(
+fn bullet_collision(
     mut collision_events: EventReader<CollisionEvent>,
     mut commands: Commands,
     damage_q: Query<&Damage>,
@@ -65,7 +55,6 @@ fn handle_collision(
 ) {
     for collision_event in collision_events.read() {
         if let CollisionEvent::Started(entity1, entity2, _flags) = collision_event {
-            // Feels wierd
             apply_damage(*entity1, *entity2, &damage_q, &mut health_q);
             apply_damage(*entity2, *entity1, &damage_q, &mut health_q);
             despawn_if_bullet(*entity1, &mut commands, &bullet_q);
@@ -95,13 +84,23 @@ pub fn spawn_default_bullet(
         .insert(texture);
 }
 
-//I don't have an idea on where else to put it. I think only bullets will have damage
-//TODO: move the substract logic to this and make it triggered with an event
-
 fn damage_system(query: Query<(Entity, &Health)>, mut commands: Commands) {
     for (entity, health) in &query {
         if health.0 <= 0.0 {
             commands.entity(entity).despawn();
+        }
+    }
+}
+
+fn apply_damage(
+    attacker: Entity,
+    target: Entity,
+    damage_q: &Query<&Damage>,
+    health_q: &mut Query<&mut Health>,
+) {
+    if let Ok(damage) = damage_q.get(attacker) {
+        if let Ok(mut health) = health_q.get_mut(target) {
+            health.0 -= damage.0;
         }
     }
 }
