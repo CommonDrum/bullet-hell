@@ -5,8 +5,8 @@ use crate::game::ai;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins(ai::plugin)
-        .add_systems(Startup, place_enemy_debug)
-        .add_systems(Update, melee_damage);
+        .add_systems(Startup, place_enemy_debug.run_if(in_state(AppState::Game)))
+        .add_systems(Update, melee_damage.run_if(in_state(AppState::Game)));
 }
 
 #[derive(Bundle)]

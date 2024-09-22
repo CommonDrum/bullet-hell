@@ -55,11 +55,11 @@ impl DirectionArray {
 pub struct Melee(pub f32);
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
-pub enum GameState {
+pub enum AppState {
     #[default]
+    Menu,
     Game,
     Splash,
-    Menu,
     
 }
 

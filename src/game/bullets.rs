@@ -1,7 +1,7 @@
 use crate::game::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Update, (bullet_collision, damage_system));
+    app.add_systems(Update, (bullet_collision, damage_system).run_if(in_state(AppState::Game)));
 }
 #[derive(Bundle)]
 pub struct BulletBundle {

@@ -4,8 +4,8 @@ use crate::game::prelude::*;
 use bevy::window::PrimaryWindow;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Startup, place_player)
-        .add_systems(Update, (player_movement, shoot, player_rotation));
+    app.add_systems(Startup, place_player.run_if(in_state(AppState::Game)))
+        .add_systems(Update, (player_movement, shoot, player_rotation).run_if(in_state(AppState::Game)));
 }
 
 fn place_player(mut commands: Commands, asset_server: Res<AssetServer>) {

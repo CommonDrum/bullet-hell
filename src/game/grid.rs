@@ -5,7 +5,7 @@ const BACKGROUND_LAYER: f32 = -1.1;
 const MAP_SIZE: i32 = 50;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Startup, place_background);
+    app.add_systems(Startup, place_background.run_if(in_state(AppState::Game)));
 }
 
 pub fn get_grid_coords() {}

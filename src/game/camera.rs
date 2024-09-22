@@ -5,8 +5,8 @@ use bevy::input::mouse::{MouseScrollUnit, MouseWheel};
  * it also has zooming in and out capabilities*/
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Startup, camera_setup)
-        .add_systems(Update, (camera_system, scroll_events).run_if(in_state(GameState::Game)));
+    app.add_systems(Startup, camera_setup.run_if(in_state(AppState::Game)))
+        .add_systems(Update, (camera_system, scroll_events).run_if(in_state(AppState::Game)));
 }
 
 fn camera_setup(mut commands: Commands) {
