@@ -4,7 +4,7 @@ use crate::game::prelude::*;
 use bevy::window::PrimaryWindow;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Startup, place_player.run_if(in_state(AppState::Game)))
+    app.add_systems(OnEnter(AppState::Game), place_player)
         .add_systems(Update, (player_movement, shoot, player_rotation).run_if(in_state(AppState::Game)));
 }
 
