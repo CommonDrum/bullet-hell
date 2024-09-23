@@ -1,7 +1,7 @@
 use crate::game::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Update, (bullet_collision, damage_system).run_if(in_state(AppState::Game)));
+    app.add_systems(Update, (bullet_collision, enemy_death_system, player_death_system).run_if(in_state(AppState::Game)));
 }
 #[derive(Bundle)]
 pub struct BulletBundle {
@@ -16,7 +16,7 @@ pub struct BulletBundle {
     pub active: ActiveEvents,
     pub damage: Damage,
     pub sensor: Sensor,
-    pub game: Game,
+    pub game_state_marker: Game,
 }
 
 impl Default for BulletBundle {
@@ -36,7 +36,7 @@ impl Default for BulletBundle {
             bullet_marker: Bullet,
             active: ActiveEvents::COLLISION_EVENTS,
             damage: Damage(1.0),
-            game: Game,
+            game_state_marker: Game,
 
         }
     }
@@ -86,10 +86,21 @@ pub fn spawn_default_bullet(
         .insert(texture);
 }
 
-fn damage_system(query: Query<(Entity, &Health), With<Enemy>>, mut commands: Commands) {
+fn enemy_death_system(query: Query<(Entity, &Health), With<Enemy>>, mut commands: Commands) {
     for (entity, health) in &query {
         if health.0 <= 0.0 {
             commands.entity(entity).despawn();
+        }
+    }
+}
+
+fn player_death_system(
+        mut next_app: ResMut<NextState<AppState>>,
+        query: Query<(Entity, &Health), With<Player>>, mut commands: Commands) {
+    for (entity, health) in &query {
+        if health.0 <= 0.0 {
+            commands.entity(entity).despawn();
+            next_app.set(AppState::Menu);
         }
     }
 }
