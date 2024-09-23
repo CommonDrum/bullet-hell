@@ -2,7 +2,6 @@ pub mod game;
 pub mod menu;
 use crate::game::prelude::*; 
 use crate::menu::*;
-use bevy::{winit::WinitSettings};
 
 fn main() {
     App::new()
@@ -13,6 +12,5 @@ fn main() {
         .add_plugins(game::plugin)
         .add_plugins(menu::plugin)
         .insert_resource(Msaa::Off)
-        .insert_resource(WinitSettings::desktop_app())
         .run();
 }
