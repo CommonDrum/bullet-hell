@@ -8,7 +8,6 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, (preload_assets, spawn_forest_sprite).chain());
 }
 
-
 fn preload_assets(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -31,8 +30,6 @@ fn preload_assets(
     commands.insert_resource(tilesets);
 }
 
-
-
 #[derive(Resource)]
 struct Tilesets {
     atlases: HashMap<String, (Handle<TextureAtlasLayout>, Handle<Image>)>,
@@ -46,10 +43,7 @@ impl Tilesets {
     }
 }
 
-fn spawn_forest_sprite(
-    tilesets: Res<Tilesets>,
-    mut commands: Commands,
-) {
+fn spawn_forest_sprite(tilesets: Res<Tilesets>, mut commands: Commands) {
     if let Some((layout_handle, texture_handle)) = tilesets.atlases.get("forest") {
         commands.spawn((
             SpriteBundle {
@@ -66,4 +60,3 @@ fn spawn_forest_sprite(
         eprintln!("Tileset 'forest' not found");
     }
 }
-
