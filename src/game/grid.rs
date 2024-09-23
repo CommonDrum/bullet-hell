@@ -42,7 +42,8 @@ fn place_background(mut commands: Commands, asset_server: Res<AssetServer>) {
                     )))
                     .insert(RigidBody::KinematicPositionBased)
                     .insert(Collider::cuboid(25.0, 25.0))
-                    .insert(LockedAxes::TRANSLATION_LOCKED);
+                    .insert(LockedAxes::TRANSLATION_LOCKED)
+                    .insert(Game);
             } else {
                 commands
                     .spawn(SpriteBundle {
@@ -60,7 +61,8 @@ fn place_background(mut commands: Commands, asset_server: Res<AssetServer>) {
                         viewport_x,
                         viewport_y,
                         BACKGROUND_LAYER,
-                    )));
+                    )))
+                    .insert(Game);
             }
         }
     }

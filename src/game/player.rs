@@ -25,7 +25,8 @@ fn place_player(mut commands: Commands, asset_server: Res<AssetServer>) {
         .insert(RigidBody::KinematicPositionBased)
         .insert(Collider::ball(25.0))
         .insert(LockedAxes::TRANSLATION_LOCKED)
-        .insert(KinematicCharacterController::default());
+        .insert(KinematicCharacterController::default())
+        .insert(Game);
 }
 
 fn player_movement(

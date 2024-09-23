@@ -20,6 +20,7 @@ pub struct EnemyBundle {
     pub enemy_marker: Enemy,
     pub ai_mode: AiMode,
     pub direction_array: DirectionArray,
+    pub game_state_marker: Game,
 }
 
 impl Default for EnemyBundle {
@@ -43,6 +44,7 @@ impl Default for EnemyBundle {
             direction_array: DirectionArray([
                 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
             ]),
+            game_state_marker: Game,
         }
     }
 }

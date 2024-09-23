@@ -16,6 +16,7 @@ pub struct BulletBundle {
     pub active: ActiveEvents,
     pub damage: Damage,
     pub sensor: Sensor,
+    pub game: Game,
 }
 
 impl Default for BulletBundle {
@@ -35,6 +36,7 @@ impl Default for BulletBundle {
             bullet_marker: Bullet,
             active: ActiveEvents::COLLISION_EVENTS,
             damage: Damage(1.0),
+            game: Game,
 
         }
     }
@@ -84,7 +86,7 @@ pub fn spawn_default_bullet(
         .insert(texture);
 }
 
-fn damage_system(query: Query<(Entity, &Health)>, mut commands: Commands) {
+fn damage_system(query: Query<(Entity, &Health), With<Enemy>>, mut commands: Commands) {
     for (entity, health) in &query {
         if health.0 <= 0.0 {
             commands.entity(entity).despawn();

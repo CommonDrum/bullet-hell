@@ -10,7 +10,8 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 fn camera_setup(mut commands: Commands) {
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn(Camera2dBundle::default())
+        .insert(Game);
 }
 
 fn camera_system(
