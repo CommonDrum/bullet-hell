@@ -1,6 +1,5 @@
-
 use crate::game::prelude::*;
-use bevy::{color::palettes::basic::*};
+use bevy::color::palettes::basic::*;
 
 #[derive(Component)]
 struct OnMenuScreen;
@@ -57,7 +56,7 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
         Camera2dBundle::default(),
         OnMenuScreen, // Tag for cleanup
     ));
-    
+
     commands
         .spawn((
             NodeBundle {
@@ -113,4 +112,3 @@ fn cleanup_menu(mut commands: Commands, menu_entities: Query<Entity, With<OnMenu
         commands.entity(entity).despawn();
     }
 }
-

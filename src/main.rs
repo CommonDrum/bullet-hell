@@ -1,6 +1,6 @@
 pub mod game;
 pub mod menu;
-use crate::game::prelude::*; 
+use crate::game::prelude::*;
 use crate::menu::*;
 
 fn main() {

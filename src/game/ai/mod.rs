@@ -7,7 +7,9 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         (
             movement_system.run_if(in_state(AppState::Game)),
-            (aggressive_ai, obstacle_avoidance_system).chain().run_if(in_state(AppState::Game)),
+            (aggressive_ai, obstacle_avoidance_system)
+                .chain()
+                .run_if(in_state(AppState::Game)),
         ),
     );
 }

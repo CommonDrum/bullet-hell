@@ -63,9 +63,7 @@ pub enum AppState {
     Menu,
     Game,
     Splash,
-    
 }
-
 
 #[derive(States, Default, Debug, Clone, PartialEq, Eq, Hash)]
 pub enum MyPausedState {

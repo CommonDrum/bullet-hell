@@ -6,12 +6,14 @@ use bevy::input::mouse::{MouseScrollUnit, MouseWheel};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(AppState::Game), camera_setup)
-        .add_systems(Update, (camera_system, scroll_events).run_if(in_state(AppState::Game)));
+        .add_systems(
+            Update,
+            (camera_system, scroll_events).run_if(in_state(AppState::Game)),
+        );
 }
 
 fn camera_setup(mut commands: Commands) {
-    commands.spawn(Camera2dBundle::default())
-        .insert(Game);
+    commands.spawn(Camera2dBundle::default()).insert(Game);
 }
 
 fn camera_system(

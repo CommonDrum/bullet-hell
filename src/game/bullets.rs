@@ -1,7 +1,11 @@
 use crate::game::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Update, (bullet_collision, enemy_death_system, player_death_system).run_if(in_state(AppState::Game)));
+    app.add_systems(
+        Update,
+        (bullet_collision, enemy_death_system, player_death_system)
+            .run_if(in_state(AppState::Game)),
+    );
 }
 #[derive(Bundle)]
 pub struct BulletBundle {
@@ -37,7 +41,6 @@ impl Default for BulletBundle {
             active: ActiveEvents::COLLISION_EVENTS,
             damage: Damage(1.0),
             game_state_marker: Game,
-
         }
     }
 }
@@ -95,8 +98,10 @@ fn enemy_death_system(query: Query<(Entity, &Health), With<Enemy>>, mut commands
 }
 
 fn player_death_system(
-        mut next_app: ResMut<NextState<AppState>>,
-        query: Query<(Entity, &Health), With<Player>>, mut commands: Commands) {
+    mut next_app: ResMut<NextState<AppState>>,
+    query: Query<(Entity, &Health), With<Player>>,
+    mut commands: Commands,
+) {
     for (entity, health) in &query {
         if health.0 <= 0.0 {
             commands.entity(entity).despawn();

@@ -11,7 +11,6 @@ pub fn radians_to_index(angle: f32, arr_size: usize) -> usize {
     index % arr_size
 }
 
-
 pub fn index_to_radians(index: usize, arr_size: usize) -> f32 {
     let mut angle = (index as f32 / arr_size as f32) * 2.0 * PI;
     if angle > PI {
@@ -19,7 +18,6 @@ pub fn index_to_radians(index: usize, arr_size: usize) -> f32 {
     }
     angle
 }
-
 
 pub fn normalize_array(arr: &mut [f32]) {
     let min_val = arr.iter().cloned().fold(f32::INFINITY, f32::min);
@@ -66,8 +64,6 @@ pub fn round_raycast(
     hit_results
 }
 
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -84,19 +80,21 @@ mod tests {
     fn test_radians_to_index_positive_angle() {
         let arr_size = 8;
         let result = radians_to_index(PI / 2.0, arr_size);
-        assert_eq!(result, 2);    }
+        assert_eq!(result, 2);
+    }
 
     #[test]
     fn test_radians_to_index_full_circle() {
         let arr_size = 8;
         let result = radians_to_index(2.0 * PI, arr_size);
-        assert_eq!(result, 0);     }
+        assert_eq!(result, 0);
+    }
 
     #[test]
     fn test_radians_to_index_negative_angle() {
         let arr_size = 8;
         let result = radians_to_index(-PI / 2.0, arr_size);
-        assert_eq!(result, 6); 
+        assert_eq!(result, 6);
     }
 
     #[test]
@@ -106,4 +104,3 @@ mod tests {
         assert_eq!(result, 1);
     }
 }
-
