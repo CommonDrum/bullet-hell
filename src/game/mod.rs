@@ -7,6 +7,7 @@ pub mod grid;
 pub mod player;
 pub mod prelude;
 pub mod utils;
+pub mod preloader;
 
 use crate::game::prelude::*;
 
@@ -17,6 +18,7 @@ pub(super) fn plugin(app: &mut App) {
         player::plugin,
         bullets::plugin,
         enemies::plugin,
+        preloader::plugin,
     ))
     .add_systems(OnExit(AppState::Game), despawn_game_entities);
 }
