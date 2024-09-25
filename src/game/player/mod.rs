@@ -13,26 +13,41 @@ pub(super) fn plugin(app: &mut App) {
         );
 }
 
-fn place_player(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands
-        .spawn(Player)
-        .insert(Speed(500.0))
-        .insert(Health(100.0))
-        .insert(SpriteBundle {
-            sprite: Sprite {
-                custom_size: Some(Vec2::new(50.0, 60.0)),
-                ..Default::default()
-            },
-            texture: asset_server.load("sprites/Soldier 1/soldier1_gun.png"),
-            ..default()
-        })
-        .insert(TransformBundle::from(Transform::from_xyz(0.0, 100.0, 0.0)))
-        .insert(RigidBody::KinematicPositionBased)
-        .insert(Collider::ball(25.0))
-        .insert(LockedAxes::TRANSLATION_LOCKED)
-        .insert(KinematicCharacterController::default())
-        .insert(Game);
+
+fn place_player(
+    mut commands: Commands,
+    tilesets: Res<Tilesets>,
+) {
+    let atlas_name = "player";
+    let sprite_index = 21;
+    let position = Vec3::new(0.0, 100.0, 0.0);
+
+    if let Some((layout_handle, texture_handle)) = tilesets.atlases.get(atlas_name) {
+        commands
+            .spawn((
+                Player,
+                Speed(100.0),
+                Health(100.0),
+                SpriteBundle {
+                    texture: texture_handle.clone(),
+                    transform: Transform::from_translation(position),
+                    ..default()
+                },
+                TextureAtlas {
+                    layout: layout_handle.clone(),
+                    index: sprite_index,
+                },
+                RigidBody::KinematicPositionBased,
+                Collider::ball(8.0),
+                LockedAxes::TRANSLATION_LOCKED,
+                KinematicCharacterController::default(),
+                Game,
+            ));
+    } else {
+        eprintln!("Tileset '{}' not found", atlas_name);
+    }
 }
+
 
 fn player_movement(
     keyboard_input: Res<ButtonInput<KeyCode>>,

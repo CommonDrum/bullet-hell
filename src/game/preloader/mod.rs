@@ -15,9 +15,9 @@ fn preload_assets(
 ) {
     let mut tilesets = Tilesets::new();
 
-    for (name, path, cols, rows) in ASSET_LIST.iter() {
+    for (name, path, cols, rows, size) in ASSET_LIST.iter() {
         let texture_handle = asset_server.load(*path);
-        let tile_size = UVec2::new(16, 16);
+        let tile_size = UVec2::new(*size, *size);
         let layout = TextureAtlasLayout::from_grid(tile_size, *cols, *rows, None, None);
         let layout_handle = texture_atlas_layouts.add(layout);
 

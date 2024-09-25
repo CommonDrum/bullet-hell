@@ -7,43 +7,52 @@ pub(super) fn plugin(app: &mut App) {
             .run_if(in_state(AppState::Game)),
     );
 }
-#[derive(Bundle)]
-pub struct BulletBundle {
-    pub transform: TransformBundle,
-    pub rigid_body: RigidBody,
-    pub collider: Collider,
-    pub velocity: Velocity,
-    pub mass_properties: ColliderMassProperties,
-    pub locked_axes: LockedAxes,
-    pub gravity: GravityScale,
-    pub bullet_marker: Bullet,
-    pub active: ActiveEvents,
-    pub damage: Damage,
-    pub sensor: Sensor,
-    pub game_state_marker: Game,
-}
 
-impl Default for BulletBundle {
-    fn default() -> Self {
-        Self {
-            transform: TransformBundle::default(),
-            rigid_body: RigidBody::Dynamic,
-            collider: Collider::ball(1.0 / 2.0),
-            sensor: Sensor,
-            velocity: Velocity {
-                linvel: Vec2::ZERO,
+
+pub fn spawn_bullet(
+    commands: &mut Commands,
+    texture: Handle<Image>,
+    position: Vec3,
+    velocity: Vec3,
+) -> Entity {
+    commands
+        .spawn((
+            SpriteBundle {
+                texture,
+                transform: Transform::from_translation(position),
+                ..Default::default()
+            },
+            RigidBody::Dynamic,
+            Collider::ball(1.0 / 2.0),
+            Sensor,
+            Velocity {
+                linvel: Vec2::new(velocity.x, velocity.y),
                 angvel: 0.0,
             },
-            mass_properties: ColliderMassProperties::Density(0.2),
-            locked_axes: LockedAxes::ROTATION_LOCKED,
-            gravity: GravityScale(0.0),
-            bullet_marker: Bullet,
-            active: ActiveEvents::COLLISION_EVENTS,
-            damage: Damage(1.0),
-            game_state_marker: Game,
-        }
-    }
+            ColliderMassProperties::Density(0.2),
+            LockedAxes::ROTATION_LOCKED,
+            GravityScale(0.0),
+            Bullet,
+            ActiveEvents::COLLISION_EVENTS,
+            Damage(1.0),
+            Game,
+        ))
+        .id()
 }
+
+pub fn spawn_default_bullet(
+    commands: &mut Commands,
+    asset_server: &Res<AssetServer>,
+    position: Vec3,
+    velocity: Vec3,
+) -> Entity {
+    let texture: Handle<Image> = asset_server.load("sprites/bullet.png");
+    spawn_bullet(commands, texture, position, velocity) //think about inserting the values of
+                                                        //position, veolcity etc. insead of
+                                                        //embeding in funciton.
+}
+
+
 
 fn despawn_if_bullet(entity: Entity, commands: &mut Commands, bullet_q: &Query<&Bullet>) {
     if bullet_q.get(entity).is_ok() {
@@ -66,27 +75,6 @@ fn bullet_collision(
             despawn_if_bullet(*entity2, &mut commands, &bullet_q);
         }
     }
-}
-
-pub fn spawn_default_bullet(
-    commands: &mut Commands,
-    asset_server: &Res<AssetServer>,
-    position: Vec3,
-    velocity: Vec3,
-) {
-    let texture: Handle<Image> = asset_server.load("sprites/bullet.png");
-    commands
-        .spawn(BulletBundle {
-            ..Default::default()
-        })
-        .insert(TransformBundle::from(Transform::from_xyz(
-            position.x, position.y, position.z,
-        )))
-        .insert(Velocity {
-            linvel: Vec2::new(velocity.x, velocity.y),
-            angvel: 0.,
-        })
-        .insert(texture);
 }
 
 fn enemy_death_system(query: Query<(Entity, &Health), With<Enemy>>, mut commands: Commands) {

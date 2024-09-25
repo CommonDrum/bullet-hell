@@ -4,7 +4,7 @@ mod tiles;
 
 use crate::game::map::tiles::*;
 
-pub const BASIC_SIZE_IN_VIEWPORT: f32 = 50.0;
+pub const BASIC_SIZE_IN_VIEWPORT: f32 = 16.0;
 const BACKGROUND_LAYER: f32 = -1.1;
 const MAP_SIZE: i32 = 50;
 
