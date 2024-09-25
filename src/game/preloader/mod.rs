@@ -5,7 +5,7 @@ mod asset_list;
 use crate::game::preloader::asset_list::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Startup, (preload_assets, spawn_forest_sprite).chain());
+    app.add_systems(Startup, preload_assets);
 }
 
 fn preload_assets(
@@ -31,8 +31,8 @@ fn preload_assets(
 }
 
 #[derive(Resource)]
-struct Tilesets {
-    atlases: HashMap<String, (Handle<TextureAtlasLayout>, Handle<Image>)>,
+pub struct Tilesets {
+    pub atlases: HashMap<String, (Handle<TextureAtlasLayout>, Handle<Image>)>,
 }
 
 impl Tilesets {
@@ -40,23 +40,5 @@ impl Tilesets {
         Self {
             atlases: HashMap::new(),
         }
-    }
-}
-
-fn spawn_forest_sprite(tilesets: Res<Tilesets>, mut commands: Commands) {
-    if let Some((layout_handle, texture_handle)) = tilesets.atlases.get("forest") {
-        commands.spawn((
-            SpriteBundle {
-                texture: texture_handle.clone(),
-                transform: Transform::from_translation(Vec3::new(0.0, 0.0, 10.0)),
-                ..default()
-            },
-            TextureAtlas {
-                layout: layout_handle.clone(),
-                index: 20, // Index of the sprite in the atlas you want to display
-            },
-        ));
-    } else {
-        eprintln!("Tileset 'forest' not found");
     }
 }
