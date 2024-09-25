@@ -1,9 +1,6 @@
 use crate::game::prelude::*;
 use bevy::input::mouse::{MouseScrollUnit, MouseWheel};
 
-/* This is a camera plugin that uses player tag component to follow the player around.
- * it also has zooming in and out capabilities*/
-
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(AppState::Game), camera_setup)
         .add_systems(
@@ -17,22 +14,12 @@ fn camera_setup(mut commands: Commands) {
 }
 
 fn camera_system(
-    mut param_set: ParamSet<(
-        Query<&mut Transform, With<Camera>>,
-        Query<&Transform, With<Player>>,
-    )>,
+    mut q_camera: Query<&mut Transform, With<Camera>>,
+    q_player: Query<&Transform, (With<Player>, Without<Camera>)>,
 ) {
-    //This is a very nice way to see how borrow checker works. I first have to get the value and
-    //drop the reference and move to the other mutable reference.
-    let player_translation = {
-        let binding_1 = param_set.p1();
-        let player_transform = binding_1.get_single().unwrap();
-        player_transform.translation
-    };
-
-    let mut binding_0 = param_set.p0();
-    let mut camera_transform = binding_0.get_single_mut().unwrap();
-    camera_transform.translation = player_translation;
+    let player_transform = q_player.get_single().unwrap();
+    let mut camera_transform = q_camera.get_single_mut().unwrap();
+    camera_transform.translation = player_transform.translation;
 }
 
 fn scroll_events(

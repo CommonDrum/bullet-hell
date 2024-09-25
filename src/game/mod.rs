@@ -2,11 +2,11 @@ pub mod ai;
 pub mod bullets;
 pub mod components;
 pub mod enemies;
+pub mod map;
 pub mod player;
 pub mod preloader;
 pub mod prelude;
 pub mod utils;
-pub mod map;
 
 use crate::game::prelude::*;
 

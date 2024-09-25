@@ -12,7 +12,6 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(AppState::Game), place_background);
 }
 
-
 pub fn get_viewport_cords(x: i32, y: i32) -> (f32, f32) {
     (
         x as f32 * BASIC_SIZE_IN_VIEWPORT,
@@ -20,12 +19,7 @@ pub fn get_viewport_cords(x: i32, y: i32) -> (f32, f32) {
     )
 }
 
-
-
-pub fn place_background(
-    mut commands: Commands, 
-    tilesets: Res<Tilesets>
-) {
+pub fn place_background(mut commands: Commands, tilesets: Res<Tilesets>) {
     for y in -MAP_SIZE..=MAP_SIZE {
         for x in -MAP_SIZE..=MAP_SIZE {
             let (viewport_x, viewport_y) = get_viewport_cords(x, y);
@@ -39,6 +33,3 @@ pub fn place_background(
         }
     }
 }
-
-
-
