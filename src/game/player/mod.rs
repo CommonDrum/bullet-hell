@@ -9,7 +9,7 @@ pub(super) fn plugin(app: &mut App) {
         .add_systems(OnEnter(AppState::Game), place_player)
         .add_systems(
             Update,
-            (player_movement, shoot, player_rotation).run_if(in_state(AppState::Game)),
+            (player_movement, shoot, player_flip).run_if(in_state(AppState::Game)),
         );
 }
 
@@ -116,3 +116,24 @@ fn player_rotation(
         transform.rotation = Quat::from_rotation_z(angle);
     }
 }
+fn player_flip(
+    mut q_transform: Query<&mut Transform, With<Player>>,
+    q_windows: Query<&Window, With<PrimaryWindow>>,
+) {
+    let mut transform = q_transform.get_single_mut().unwrap();
+    let window = q_windows.single();
+
+    if let Some(cursor_position) = window.cursor_position() {
+        let window_size = Vec2::new(window.width(), window.height());
+        let screen_center = window_size / 2.0;
+
+        let difference = screen_center - cursor_position;
+
+        if difference.x > 0.0 {
+            transform.scale.x = -transform.scale.x.abs(); // Flip left
+        } else {
+            transform.scale.x = transform.scale.x.abs(); // Flip right
+        }
+    }
+}
+
