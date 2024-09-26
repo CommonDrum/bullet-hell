@@ -1,6 +1,7 @@
 use crate::game::prelude::*;
 use pathfinding::prelude::astar;
 
+#[derive(Resource)]
 pub struct Grid {
     width: usize,
     height: usize,
@@ -61,7 +62,7 @@ impl Grid {
         &self,
         start: (usize, usize),
         goal: (usize, usize),
-    ) -> Option<(Vec<(usize, usize)>, usize)> {
+    ) -> Option<(Vec<(usize, usize)>, isize)> {
         astar(
             &start,
             |&(x, y)| self.neighbors(x, y).into_iter().map(|p| (p, 1)),

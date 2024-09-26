@@ -1,4 +1,5 @@
 use crate::game::prelude::*;
+use crate::game::map::pathfinding::*;
 
 pub fn spawn_tile(
     tilesets: &Res<Tilesets>,
@@ -30,6 +31,7 @@ pub fn spawn_tile(
 
 pub fn spawn_wall(
     tilesets: &Res<Tilesets>,
+    mut grid: &mut Res<Grid>,
     commands: &mut Commands,
     atlas_name: &str,
     sprite_index: usize,

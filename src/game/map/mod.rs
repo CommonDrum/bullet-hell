@@ -9,14 +9,13 @@ use crate::game::map::pathfinding::*;
 pub const BASIC_SIZE_IN_VIEWPORT: f32 = 16.0;
 const BACKGROUND_LAYER: f32 = -1.1;
 const MAP_SIZE: i32 = 50;
-const MAP_SIZEE: usize = 10;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(AppState::Game), (setup_grid, place_background).chain());
 }
 
 fn setup_grid(mut commands: Commands) {
-    let grid = Grid::new(MAP_SIZEE , MAP_SIZEE );
+    let grid = Grid::new(MAP_SIZE as usize, MAP_SIZE as usize);
     commands.insert_resource(grid);
 }
 
@@ -26,8 +25,8 @@ pub fn get_viewport_cords(x: i32, y: i32) -> (f32, f32) {
         y as f32 * BASIC_SIZE_IN_VIEWPORT,
     )
 }
-Grid::new(MAP_SIZE as usize, MAP_SIZE as usize)
-pub fn place_background(mut commands: Commands, tilesets: Res<Tilesets>, mut grid: Res<grid>) {
+
+pub fn place_background(mut commands: Commands, tilesets: Res<Tilesets>, mut grid: Res<Grid>) {
     for y in -MAP_SIZE..=MAP_SIZE {
         for x in -MAP_SIZE..=MAP_SIZE {
             let (viewport_x, viewport_y) = get_viewport_cords(x, y);
