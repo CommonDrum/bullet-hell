@@ -1,8 +1,10 @@
 use crate::game::prelude::*;
 
 mod tiles;
+mod pathfinding;
 
 use crate::game::map::tiles::*;
+use crate::game::map::pathfinding::*;
 
 pub const BASIC_SIZE_IN_VIEWPORT: f32 = 16.0;
 const BACKGROUND_LAYER: f32 = -1.1;
