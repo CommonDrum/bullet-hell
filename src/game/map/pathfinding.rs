@@ -2,6 +2,7 @@ use crate::game::prelude::*;
 use pathfinding::prelude::astar;
 
 #[derive(Resource)]
+
 pub struct Map {
     width: isize,
     height: isize,
@@ -14,45 +15,40 @@ impl Map {
         Self { width, height, tiles }
     }
 
-    pub fn set_tile(&mut self, x: isize, y: isize, walkable: bool) {
-        if x >= 0 && y >= 0 && x < self.width && y < self.height {
-            self.tiles[y as usize][x as usize] = walkable;
-        }
+    fn in_bounds(&self, x: isize, y: isize) -> bool {
+        x >= 0 && x < self.width && y >= 0 && y < self.height
     }
 
-    pub fn is_walkable(&self, x: isize, y: isize) -> bool {
-        if x >= 0 && y >= 0 && x < self.width && y < self.height {
-            self.tiles[y as usize][x as usize]
-        } else {
-            false
-        }
+    fn is_walkable(&self, x: isize, y: isize) -> bool {
+        self.tiles
+            .get(y as usize)
+            .and_then(|row| row.get(x as usize))
+            .cloned()
+            .unwrap_or(false)
     }
 
-    pub fn neighbors(&self, x: isize, y: isize) -> Vec<(isize, isize)> {
-        let mut neighbors = Vec::new();
-        let directions = [
-            (0, 1),   // Down
-            (1, 0),   // Right
-            (0, -1),  // Up
-            (-1, 0),  // Left
-            (1, 1),   // Down-right
-            (1, -1),  // Up-right
-            (-1, 1),  // Down-left
-            (-1, -1), // Up-left
+    fn successors(&self, position: (isize, isize)) -> Vec<((isize, isize), u32)> {
+        let (x, y) = position;
+        let possible_moves = vec![
+            (x + 1, y + 2),
+            (x + 1, y - 2),
+            (x - 1, y + 2),
+            (x - 1, y - 2),
+            (x + 2, y + 1),
+            (x + 2, y - 1),
+            (x - 2, y + 1),
+            (x - 2, y - 1),
         ];
 
-        for (x_offset, y_offset) in directions.iter() {
-            let new_x = x + x_offset;
-            let new_y = y + y_offset;
+        possible_moves
+            .into_iter()
+            .filter(|&(nx, ny)| self.in_bounds(nx, ny) && self.is_walkable(nx, ny))
+            .map(|p| (p, 1)) // Cost of each move is 1
+            .collect()
+    }
 
-            if new_x >= 0 && new_y >= 0 && new_x < self.width && new_y < self.height {
-                if self.is_walkable(new_x, new_y) {
-                    neighbors.push((new_x, new_y));
-                }
-            }
-        }
-
-        neighbors
+    fn heuristic(&self, current: (isize, isize), goal: (isize, isize)) -> u32 {
+        ((current.0 - goal.0).abs() + (current.1 - goal.1).abs()) as u32
     }
 
     pub fn find_path(
@@ -62,10 +58,21 @@ impl Map {
     ) -> Option<(Vec<(isize, isize)>, isize)> {
         astar(
             &start,
-            |&(x, y)| self.neighbors(x, y).into_iter().map(|p| (p, 1)), // Only return walkable neighbors
-            |&(x, y)| (x - goal.0).abs() + (y - goal.1).abs(),
+            |p| self.successors(*p),
+            |p| self.heuristic(*p, goal) / 3,
             |&p| p == goal,
         )
+        .map(|(path, cost)| (path, cost as isize))
+    }
+
+    pub fn set_tile(&mut self, x: isize, y: isize, walkable: bool) {
+        if self.in_bounds(x, y) {
+            if let Some(row) = self.tiles.get_mut(y as usize) {
+                if let Some(tile) = row.get_mut(x as usize) {
+                    *tile = walkable;
+                }
+            }
+        }
     }
 }
 

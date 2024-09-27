@@ -15,7 +15,7 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 fn setup_grid(mut commands: Commands) {
-    let map = Map::new(MAP_SIZE as isize, MAP_SIZE as isize);
+    let map = Map::new(MAP_SIZE , MAP_SIZE);
     commands.insert_resource(map);
 }
 
