@@ -20,7 +20,7 @@ fn place_player(
 ) {
     let atlas_name = "player";
     let sprite_index = 21;
-    let position = Vec3::new(0.0, 100.0, 0.0);
+    let position = Vec3::new(50.0, 200.0, 0.0);
 
     if let Some((layout_handle, texture_handle)) = tilesets.atlases.get(atlas_name) {
         commands

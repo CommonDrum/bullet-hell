@@ -33,17 +33,24 @@ pub fn get_map_coords(x: f32, y: f32) -> (isize, isize) {
     )
 }
 
-pub fn place_background(mut commands: Commands, tilesets: Res<Tilesets>, mut grid: Res<Map>) {
+
+
+fn place_background(mut commands: Commands, tilesets: Res<Tilesets>, mut grid: ResMut<Map>) {
     for y in -MAP_SIZE..=MAP_SIZE {
         for x in -MAP_SIZE..=MAP_SIZE {
             let (viewport_x, viewport_y) = get_viewport_cords(x, y);
             let position = Vec3::new(viewport_x, viewport_y, BACKGROUND_LAYER);
 
-            if (x % MAP_SIZE == 0 && x != 0) || (y % MAP_SIZE == 0 && y != 0) {
-                spawn_wall(&tilesets, &mut grid, &mut commands, "forest", 20, position);
+            if x == 0 && (y != 0 && y != 1) {
+                spawn_wall(&tilesets, &mut *grid, &mut commands, "forest", 20, position);
             } else {
                 spawn_tile(&tilesets, &mut commands, "forest", 21, position);
             }
         }
     }
 }
+
+
+
+
+

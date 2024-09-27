@@ -1,5 +1,6 @@
 use crate::game::prelude::*;
 use crate::game::map::pathfinding::*;
+use crate::game::map::*;
 
 pub fn spawn_tile(
     tilesets: &Res<Tilesets>,
@@ -29,9 +30,11 @@ pub fn spawn_tile(
     }
 }
 
+
+
 pub fn spawn_wall(
     tilesets: &Res<Tilesets>,
-    mut grid: &mut Res<Map>,
+    grid: &mut Map,
     commands: &mut Commands,
     atlas_name: &str,
     sprite_index: usize,
@@ -39,5 +42,10 @@ pub fn spawn_wall(
 ) -> Entity {
     let entity = spawn_tile(tilesets, commands, atlas_name, sprite_index, position);
     commands.entity(entity).insert(Collider::cuboid(8.0, 8.0));
+
+    let (map_x, map_y) = get_map_coords(position.x, position.y);
+    grid.set_tile(map_x, map_y, false);
+
     entity
 }
+

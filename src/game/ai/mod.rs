@@ -15,7 +15,6 @@ pub(super) fn plugin(app: &mut App) {
              ).run_if(in_state(AppState::Game)),
             (
                 aggressive_ai,
-                obstacle_avoidance_system
             )
                 .chain()
                 .run_if(in_state(AppState::Game)),

@@ -5,7 +5,7 @@ use pathfinding::prelude::astar;
 pub struct Map {
     width: isize,
     height: isize,
-    tiles: Vec<Vec<bool>>,
+    tiles: Vec<Vec<bool>>, // true = walkable, false = non-walkable
 }
 
 impl Map {
@@ -20,11 +20,11 @@ impl Map {
         }
     }
 
-    pub fn is_walkable(&self, x: isize, y: isize) -> Option<bool> {
+    pub fn is_walkable(&self, x: isize, y: isize) -> bool {
         if x >= 0 && y >= 0 && x < self.width && y < self.height {
-            Some(self.tiles[y as usize][x as usize])
+            self.tiles[y as usize][x as usize]
         } else {
-            None
+            false
         }
     }
 
@@ -46,7 +46,7 @@ impl Map {
             let new_y = y + y_offset;
 
             if new_x >= 0 && new_y >= 0 && new_x < self.width && new_y < self.height {
-                if self.tiles[new_y as usize][new_x as usize] {
+                if self.is_walkable(new_x, new_y) {
                     neighbors.push((new_x, new_y));
                 }
             }
@@ -62,7 +62,7 @@ impl Map {
     ) -> Option<(Vec<(isize, isize)>, isize)> {
         astar(
             &start,
-            |&(x, y)| self.neighbors(x, y).into_iter().map(|p| (p, 1)),
+            |&(x, y)| self.neighbors(x, y).into_iter().map(|p| (p, 1)), // Only return walkable neighbors
             |&(x, y)| (x - goal.0).abs() + (y - goal.1).abs(),
             |&p| p == goal,
         )
