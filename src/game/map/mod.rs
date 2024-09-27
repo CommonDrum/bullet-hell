@@ -1,7 +1,7 @@
 use crate::game::prelude::*;
 
 mod tiles;
-mod pathfinding;
+pub mod pathfinding;
 
 use crate::game::map::tiles::*;
 use crate::game::map::pathfinding::*;
@@ -15,8 +15,8 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 fn setup_grid(mut commands: Commands) {
-    let grid = Grid::new(MAP_SIZE as usize, MAP_SIZE as usize);
-    commands.insert_resource(grid);
+    let map = Map::new(MAP_SIZE as isize, MAP_SIZE as isize);
+    commands.insert_resource(map);
 }
 
 pub fn get_viewport_cords(x: i32, y: i32) -> (f32, f32) {
@@ -26,7 +26,14 @@ pub fn get_viewport_cords(x: i32, y: i32) -> (f32, f32) {
     )
 }
 
-pub fn place_background(mut commands: Commands, tilesets: Res<Tilesets>, mut grid: Res<Grid>) {
+pub fn get_map_coords(x: f32, y: f32) -> (isize, isize) {
+    (
+        (x / BASIC_SIZE_IN_VIEWPORT).floor() as isize,
+        (y / BASIC_SIZE_IN_VIEWPORT).floor() as isize,
+    )
+}
+
+pub fn place_background(mut commands: Commands, tilesets: Res<Tilesets>, mut grid: Res<Map>) {
     for y in -MAP_SIZE..=MAP_SIZE {
         for x in -MAP_SIZE..=MAP_SIZE {
             let (viewport_x, viewport_y) = get_viewport_cords(x, y);

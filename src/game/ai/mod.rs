@@ -2,12 +2,21 @@
 use crate::game::prelude::*;
 use crate::game::utils::*;
 use std::f32::consts::PI;
+use crate::game::map::pathfinding::*;
+use crate::game::map::*;
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         (
-            movement_system.run_if(in_state(AppState::Game)),
-            (aggressive_ai, obstacle_avoidance_system)
+            (
+                movement_system,
+                find_path,
+                pop_path_points,
+             ).run_if(in_state(AppState::Game)),
+            (
+                aggressive_ai,
+                obstacle_avoidance_system
+            )
                 .chain()
                 .run_if(in_state(AppState::Game)),
         ),
@@ -35,28 +44,74 @@ fn movement_system(
     }
 }
 
-fn aggressive_ai(
-    mut set: ParamSet<(
-        Query<(&Transform, &mut DirectionArray)>,
-        Query<&Transform, With<Player>>,
-    )>,
-) {
-    let player_position = {
-        let binding = set.p1();
-        let player_transform = binding.get_single().unwrap();
-        Vec2::new(
-            player_transform.translation.x,
-            player_transform.translation.y,
-        )
-    };
 
-    for (transform, mut direction_array) in set.p0().iter_mut() {
-        let position = Vec2::new(transform.translation.x, transform.translation.y);
-        let angle = angle_between_points(position, player_position);
-        let index = radians_to_index(angle, direction_array.0.len());
-        direction_array.change_weight(index, 1.0);
+
+fn pop_path_points(mut commands: Commands, mut q_path: Query<(Entity, &mut Path, &Transform)>) {
+    for (entity, mut path, transform) in q_path.iter_mut() {
+        let current_tile = get_map_coords(transform.translation.x, transform.translation.y);
+        if path.0.is_empty() {
+            commands.entity(entity).remove::<Path>();
+        }else if  current_tile == path.0[0] {
+            path.0.remove(0);
+        }
     }
 }
+
+
+
+fn find_path(
+    mut commands: Commands,
+    q_player: Query<&Transform, (With<Player>, Without<Enemy>)>,
+    q_enemy: Query<(Entity, &Transform), (With<Enemy>, Without<Path>)>,
+    map: Res<Map>,
+) {
+    if let Ok(player_transform) = q_player.get_single() {
+        let player_pos = get_map_coords(player_transform.translation.x, player_transform.translation.y);
+
+        for (enemy_entity, enemy_transform) in q_enemy.iter() {
+            let enemy_pos = get_map_coords(enemy_transform.translation.x, enemy_transform.translation.y);
+
+            if let Some((path, _cost)) = map.find_path(enemy_pos, player_pos) {
+                commands.entity(enemy_entity).insert(Path(path));
+            }
+        }
+    }
+}
+
+
+fn aggressive_ai(
+    mut q_enemies: Query<(&Transform, &mut DirectionArray, Option<&Path>)>,
+    q_player: Query<&Transform, (With<Player>, Without<DirectionArray>)>,
+) {
+    if let Ok(player_transform) = q_player.get_single() {
+        let player_position = Vec2::new(
+            player_transform.translation.x,
+            player_transform.translation.y,
+        );
+
+        for (transform, mut direction_array, path) in q_enemies.iter_mut() {
+            let position = Vec2::new(transform.translation.x, transform.translation.y);
+
+            let destination = if let Some(path) = path {
+                if !path.0.is_empty() {
+                    Vec2::new(
+                        path.0[0].0 as f32 * BASIC_SIZE_IN_VIEWPORT,
+                        path.0[0].1 as f32 * BASIC_SIZE_IN_VIEWPORT,
+                    )
+                } else {
+                    player_position
+                }
+            } else {
+                player_position
+            };
+
+            let angle = angle_between_points(position, destination);
+            let index = radians_to_index(angle, direction_array.0.len());
+            direction_array.change_weight(index, 1.0);
+        }
+    }
+}
+
 
 fn obstacle_avoidance_system(
     mut query: Query<(&Transform, &mut DirectionArray)>,

@@ -2,33 +2,33 @@ use crate::game::prelude::*;
 use pathfinding::prelude::astar;
 
 #[derive(Resource)]
-pub struct Grid {
-    width: usize,
-    height: usize,
+pub struct Map {
+    width: isize,
+    height: isize,
     tiles: Vec<Vec<bool>>,
 }
 
-impl Grid {
-    pub fn new(width: usize, height: usize) -> Self {
-        let tiles = vec![vec![true; width]; height];
+impl Map {
+    pub fn new(width: isize, height: isize) -> Self {
+        let tiles = vec![vec![true; width as usize]; height as usize];
         Self { width, height, tiles }
     }
 
-    pub fn set_tile(&mut self, x: usize, y: usize, walkable: bool) {
-        if x < self.width && y < self.height {
-            self.tiles[y][x] = walkable;
+    pub fn set_tile(&mut self, x: isize, y: isize, walkable: bool) {
+        if x >= 0 && y >= 0 && x < self.width && y < self.height {
+            self.tiles[y as usize][x as usize] = walkable;
         }
     }
 
-    pub fn is_walkable(&self, x: usize, y: usize) -> Option<bool> {
-        if x < self.width && y < self.height {
-            Some(self.tiles[y][x])
+    pub fn is_walkable(&self, x: isize, y: isize) -> Option<bool> {
+        if x >= 0 && y >= 0 && x < self.width && y < self.height {
+            Some(self.tiles[y as usize][x as usize])
         } else {
             None
         }
     }
 
-    pub fn neighbors(&self, x: usize, y: usize) -> Vec<(usize, usize)> {
+    pub fn neighbors(&self, x: isize, y: isize) -> Vec<(isize, isize)> {
         let mut neighbors = Vec::new();
         let directions = [
             (0, 1),   // Down
@@ -42,14 +42,11 @@ impl Grid {
         ];
 
         for (x_offset, y_offset) in directions.iter() {
-            let new_x = x as isize + x_offset;
-            let new_y = y as isize + y_offset;
+            let new_x = x + x_offset;
+            let new_y = y + y_offset;
 
-            if new_x >= 0 && new_y >= 0 {
-                let new_x = new_x as usize;
-                let new_y = new_y as usize;
-
-                if new_x < self.width && new_y < self.height && self.tiles[new_y][new_x] {
+            if new_x >= 0 && new_y >= 0 && new_x < self.width && new_y < self.height {
+                if self.tiles[new_y as usize][new_x as usize] {
                     neighbors.push((new_x, new_y));
                 }
             }
@@ -60,14 +57,15 @@ impl Grid {
 
     pub fn find_path(
         &self,
-        start: (usize, usize),
-        goal: (usize, usize),
-    ) -> Option<(Vec<(usize, usize)>, isize)> {
+        start: (isize, isize),
+        goal: (isize, isize),
+    ) -> Option<(Vec<(isize, isize)>, isize)> {
         astar(
             &start,
             |&(x, y)| self.neighbors(x, y).into_iter().map(|p| (p, 1)),
-            |&(x, y)| (x as isize - goal.0 as isize).abs() + (y as isize - goal.1 as isize),
+            |&(x, y)| (x - goal.0).abs() + (y - goal.1).abs(),
             |&p| p == goal,
         )
     }
 }
+

@@ -31,7 +31,7 @@ pub fn spawn_tile(
 
 pub fn spawn_wall(
     tilesets: &Res<Tilesets>,
-    mut grid: &mut Res<Grid>,
+    mut grid: &mut Res<Map>,
     commands: &mut Commands,
     atlas_name: &str,
     sprite_index: usize,

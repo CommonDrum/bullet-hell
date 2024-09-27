@@ -26,7 +26,7 @@ fn place_player(
         commands
             .spawn((
                 Player,
-                Speed(100.0),
+                Speed(270.0),
                 Health(100.0),
                 SpriteBundle {
                     texture: texture_handle.clone(),
