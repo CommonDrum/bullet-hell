@@ -8,7 +8,7 @@ use crate::game::map::pathfinding::*;
 
 pub const BASIC_SIZE_IN_VIEWPORT: f32 = 16.0;
 const BACKGROUND_LAYER: f32 = -1.1;
-const MAP_SIZE: i32 = 50;
+const MAP_SIZE: isize = 50;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(AppState::Game), (setup_grid, place_background).chain());
@@ -19,7 +19,7 @@ fn setup_grid(mut commands: Commands) {
     commands.insert_resource(map);
 }
 
-pub fn get_viewport_cords(x: i32, y: i32) -> (f32, f32) {
+pub fn get_viewport_cords(x: isize, y: isize) -> (f32, f32) {
     (
         x as f32 * BASIC_SIZE_IN_VIEWPORT,
         y as f32 * BASIC_SIZE_IN_VIEWPORT,
