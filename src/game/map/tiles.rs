@@ -34,7 +34,6 @@ pub fn spawn_tile(
 
 pub fn spawn_wall(
     tilesets: &Res<Tilesets>,
-    grid: &mut Map,
     commands: &mut Commands,
     atlas_name: &str,
     sprite_index: usize,
@@ -43,8 +42,6 @@ pub fn spawn_wall(
     let entity = spawn_tile(tilesets, commands, atlas_name, sprite_index, position);
     commands.entity(entity).insert(Collider::cuboid(8.0, 8.0));
 
-    let (map_x, map_y) = get_map_coords(position.x, position.y);
-    grid.set_tile(map_x, map_y, false);
 
     entity
 }
