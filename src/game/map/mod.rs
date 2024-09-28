@@ -6,7 +6,7 @@ pub mod pathfinding;
 use crate::game::map::tiles::*;
 use crate::game::map::pathfinding::*;
 
-pub const BASIC_SIZE_IN_VIEWPORT: f32 = 16.0;
+pub const PIXELS_PER_TILE: f32 = 16.0;
 const BACKGROUND_LAYER: f32 = -1.1;
 const MAP_SIZE: i32 = 50;
 
@@ -16,8 +16,8 @@ pub(super) fn plugin(app: &mut App) {
 
 pub fn get_viewport_cords(x: i32, y: i32) -> (f32, f32) {
     (
-        x as f32 * BASIC_SIZE_IN_VIEWPORT,
-        y as f32 * BASIC_SIZE_IN_VIEWPORT,
+        x as f32 * PIXELS_PER_TILE,
+        y as f32 * PIXELS_PER_TILE,
     )
 }
 
