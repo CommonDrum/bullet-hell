@@ -2,6 +2,7 @@ use crate::game::prelude::*;
 use rand::Rng;
 
 use crate::game::ai;
+use crate::game::map::pathfinding::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins(ai::plugin)

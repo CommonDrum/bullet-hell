@@ -1,7 +1,7 @@
 use crate::game::prelude::*;
 
 mod tiles;
-mod pathfinding;
+pub mod pathfinding;
 
 use crate::game::map::tiles::*;
 use crate::game::map::pathfinding::*;
