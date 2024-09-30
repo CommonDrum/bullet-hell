@@ -21,6 +21,14 @@ pub fn get_viewport_cords(x: i32, y: i32) -> (f32, f32) {
     )
 }
 
+pub fn viewport_to_pos(x: f32, y: f32) -> Pos {
+    Pos(
+        (x / PIXELS_PER_TILE).floor() as i32,
+        (y / PIXELS_PER_TILE).floor() as i32,
+    )
+}
+
+
 pub fn place_background(mut commands: Commands, tilesets: Res<Tilesets>) {
     for y in -MAP_SIZE..=MAP_SIZE {
         for x in -MAP_SIZE..=MAP_SIZE {

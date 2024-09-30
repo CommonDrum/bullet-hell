@@ -10,7 +10,7 @@ pub struct Path(pub Vec<(Pos, usize)>);
 pub struct Obstacle;
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-struct Pos(i32, i32);
+pub struct Pos(pub i32, pub i32);
 
 #[derive(Resource)]
 pub struct Pathfinder {
@@ -26,7 +26,7 @@ impl Pathfinder {
         }
     }
 
-    pub fn find_path(&self, start: Pos, goal: Pos) -> Option<Vec<Pos>> {
+    pub fn find_path(&self, start: Pos, goal: Pos) -> Option<Path> {
         if !self.is_within_bounds(&start) || !self.is_within_bounds(&goal) {
             return None;
         }
@@ -37,7 +37,14 @@ impl Pathfinder {
             |p| p.distance(&goal),
             |p| *p == goal,
         )
-        .map(|(path, _)| path)
+        .map(|(positions, _)| {
+            let path = positions
+                .into_iter()
+                .enumerate()
+                .map(|(index, pos)| (pos, index))
+                .collect();
+            Path(path)
+        })
     }
 
     fn successors(&self, pos: &Pos) -> Vec<(Pos, usize)> {
@@ -73,11 +80,15 @@ impl Pos {
     }
 }
 
+
+
+
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use bevy::prelude::*;
-    use std::collections::HashMap;
 
     #[test]
     fn test_find_path_no_obstacles() {
@@ -85,8 +96,12 @@ mod tests {
         let start = Pos(-2, -2);
         let goal = Pos(9, 9);
         let path = pathfinder.find_path(start.clone(), goal.clone()).unwrap();
-        assert_eq!(path.first().unwrap(), &start);
-        assert_eq!(path.last().unwrap(), &goal);
+
+        // Extract positions from the Path
+        let positions: Vec<Pos> = path.0.iter().map(|(pos, _)| pos.clone()).collect();
+
+        assert_eq!(positions.first().unwrap(), &start);
+        assert_eq!(positions.last().unwrap(), &goal);
     }
 
     #[test]
@@ -98,10 +113,14 @@ mod tests {
         let start = Pos(0, 0);
         let goal = Pos(5, 5);
         let path = pathfinder.find_path(start.clone(), goal.clone()).unwrap();
-        assert!(path.contains(&goal));
-        assert!(!path.contains(&Pos(2, 2)));
-        assert!(!path.contains(&Pos(2, 3)));
-        assert!(!path.contains(&Pos(2, 4)));
+
+        // Extract positions from the Path
+        let positions: Vec<Pos> = path.0.iter().map(|(pos, _)| pos.clone()).collect();
+
+        assert!(positions.contains(&goal));
+        assert!(!positions.contains(&Pos(2, 2)));
+        assert!(!positions.contains(&Pos(2, 3)));
+        assert!(!positions.contains(&Pos(2, 4)));
     }
 
     #[test]
@@ -135,7 +154,7 @@ mod tests {
 
         let obstacle_positions = vec![
             Pos(-1, -1), Pos(0, -1), Pos(1, -1),
-            Pos(-1, 0),             
+            Pos(-1, 0),
             Pos(-1, 1),  Pos(0, 1),  Pos(1, 1),
         ];
 
@@ -147,9 +166,11 @@ mod tests {
 
         let path = pathfinder.find_path(start.clone(), goal.clone()).unwrap();
 
-        assert!(path.contains(&goal));
-        assert!(path.contains(&Pos(1, 0)));
-    }
+        // Extract positions from the Path
+        let positions: Vec<Pos> = path.0.iter().map(|(pos, _)| pos.clone()).collect();
 
+        assert!(positions.contains(&goal));
+        assert!(positions.contains(&Pos(1, 0)));
+    }
 }
 

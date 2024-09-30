@@ -1,6 +1,8 @@
 // ai/mod.rs
 use crate::game::prelude::*;
 use crate::game::utils::*;
+use crate::game::map::pathfinding::*;
+use crate::game::map::*;
 use std::f32::consts::PI;
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
@@ -81,4 +83,22 @@ fn max_index(arr: &[f32]) -> usize {
         .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal))
         .map(|(index, _)| index)
         .expect("Array is empty")
+}
+
+fn follow_player(
+    q_player: Query<&Transform, (With<Player>, Without<Enemy>)>,
+    q_enemies: Query<(Entity, &Transform), (With<Enemy>, Without<Path>)>,
+    mut commands: Commands,
+    mut pathfinder: ResMut<Pathfinder>,
+    ){
+
+    let player_position = {
+        let transform = q_player.get_single().unwrap();
+        viewport_to_pos(transform.translation.x, transform.translation.y) 
+    };
+        
+    for (entity, transform) in q_enemies.iter(){
+        let enemy_position = viewport_to_pos(transform.translation.x, transform.translation.y);
+
+    }
 }
