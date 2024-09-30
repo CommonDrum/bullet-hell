@@ -8,7 +8,6 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
-
 pub fn spawn_bullet(
     commands: &mut Commands,
     texture: Handle<Image>,
@@ -51,8 +50,6 @@ pub fn spawn_default_bullet(
                                                         //position, veolcity etc. insead of
                                                         //embeding in funciton.
 }
-
-
 
 fn despawn_if_bullet(entity: Entity, commands: &mut Commands, bullet_q: &Query<&Bullet>) {
     if bullet_q.get(entity).is_ok() {

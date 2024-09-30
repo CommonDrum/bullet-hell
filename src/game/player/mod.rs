@@ -13,41 +13,35 @@ pub(super) fn plugin(app: &mut App) {
         );
 }
 
-
-fn place_player(
-    mut commands: Commands,
-    tilesets: Res<Tilesets>,
-) {
+fn place_player(mut commands: Commands, tilesets: Res<Tilesets>) {
     let atlas_name = "player";
     let sprite_index = 21;
     let position = Vec3::new(50.0, 200.0, 0.0);
 
     if let Some((layout_handle, texture_handle)) = tilesets.atlases.get(atlas_name) {
-        commands
-            .spawn((
-                Player,
-                Speed(270.0),
-                Health(100.0),
-                SpriteBundle {
-                    texture: texture_handle.clone(),
-                    transform: Transform::from_translation(position),
-                    ..default()
-                },
-                TextureAtlas {
-                    layout: layout_handle.clone(),
-                    index: sprite_index,
-                },
-                RigidBody::KinematicPositionBased,
-                Collider::ball(8.0),
-                LockedAxes::TRANSLATION_LOCKED,
-                KinematicCharacterController::default(),
-                Game,
-            ));
+        commands.spawn((
+            Player,
+            Speed(270.0),
+            Health(100.0),
+            SpriteBundle {
+                texture: texture_handle.clone(),
+                transform: Transform::from_translation(position),
+                ..default()
+            },
+            TextureAtlas {
+                layout: layout_handle.clone(),
+                index: sprite_index,
+            },
+            RigidBody::KinematicPositionBased,
+            Collider::ball(8.0),
+            LockedAxes::TRANSLATION_LOCKED,
+            KinematicCharacterController::default(),
+            Game,
+        ));
     } else {
         eprintln!("Tileset '{}' not found", atlas_name);
     }
 }
-
 
 fn player_movement(
     keyboard_input: Res<ButtonInput<KeyCode>>,
@@ -120,4 +114,3 @@ fn player_flip(
         }
     }
 }
-

@@ -34,7 +34,7 @@ pub struct Destination(pub Vec3);
 pub struct DamageEvent(pub Entity, pub Damage);
 
 #[derive(Component)]
-pub struct Path(pub Vec<(isize,isize)>);
+pub struct Path(pub Vec<(isize, isize)>);
 
 #[derive(Component)]
 pub struct DirectionArray(pub [f32; 16]);

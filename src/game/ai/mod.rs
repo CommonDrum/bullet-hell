@@ -1,16 +1,21 @@
 // ai/mod.rs
-use crate::game::prelude::*;
-use crate::game::utils::*;
 use crate::game::map::pathfinding::Path;
 use crate::game::map::pathfinding::*;
 use crate::game::map::*;
+use crate::game::prelude::*;
+use crate::game::utils::*;
 use std::f32::consts::PI;
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         (
             movement_system.run_if(in_state(AppState::Game)),
-            (aggressive_ai, follow_player, path_update, obstacle_avoidance_system )
+            (
+                aggressive_ai,
+                follow_player,
+                path_update,
+                obstacle_avoidance_system,
+            )
                 .chain()
                 .run_if(in_state(AppState::Game)),
         ),
@@ -38,12 +43,7 @@ fn movement_system(
     }
 }
 
-
-fn aggressive_ai(
-    mut set: ParamSet<(
-        Query<(&Transform, &mut DirectionArray, &Path)>,
-    )>,
-) {
+fn aggressive_ai(mut set: ParamSet<(Query<(&Transform, &mut DirectionArray, &Path)>,)>) {
     for (transform, mut direction_array, path) in set.p0().iter_mut() {
         let position = Vec2::new(transform.translation.x, transform.translation.y);
 
@@ -63,11 +63,11 @@ fn obstacle_avoidance_system(
     for (transform, mut direction_array) in query.iter_mut() {
         let position = Vec2::new(transform.translation.x, transform.translation.y);
         let arr_size = direction_array.0.len();
-        let is_dir_obstructed = round_raycast(&rapier_context, position, arr_size, 3.0, 16.0);  // THIS
-                                                                                                 // DEPENDS
-                                                                                                 // ON
-                                                                                                 // COLLIDER
-                                                                                                 // SIEZE
+        let is_dir_obstructed = round_raycast(&rapier_context, position, arr_size, 3.0, 16.0); // THIS
+                                                                                               // DEPENDS
+                                                                                               // ON
+                                                                                               // COLLIDER
+                                                                                               // SIEZE
 
         for (i, is_obstructed) in is_dir_obstructed.iter().enumerate() {
             if *is_obstructed {
@@ -85,13 +85,11 @@ fn max_index(arr: &[f32]) -> usize {
         .expect("Array is empty")
 }
 
-
-
 fn follow_player(
     q_player: Query<&Transform, (With<Player>, Without<Enemy>)>,
     q_enemies: Query<(Entity, &Transform), (With<Enemy>, Without<Path>)>,
     mut commands: Commands,
-    mut pathfinder: ResMut<Pathfinder>,
+    pathfinder: ResMut<Pathfinder>,
 ) {
     let player_position = {
         let transform = q_player.get_single().unwrap();
@@ -110,16 +108,13 @@ fn follow_player(
     }
 }
 
-fn path_update(
-    mut commands: Commands,
-    mut q_paths: Query<(Entity, &mut Path, &Transform)>,
-) {
+fn path_update(mut commands: Commands, mut q_paths: Query<(Entity, &mut Path, &Transform)>) {
     for (entity, mut path, transform) in q_paths.iter_mut() {
         let current_pos = viewport_to_pos(transform.translation.x, transform.translation.y);
 
         if let Some((next_pos, _)) = path.0.first() {
             let distance = current_pos.distance(next_pos);
-            if distance <= 2{
+            if distance <= 2 {
                 path.0.remove(0);
             }
         } else {
@@ -127,5 +122,3 @@ fn path_update(
         }
     }
 }
-
-

@@ -1,4 +1,3 @@
-use crate::game::prelude::*;
 use crate::game::map::pathfinding::*;
 use crate::game::map::*;
 
@@ -30,8 +29,6 @@ pub fn spawn_tile(
     }
 }
 
-
-
 pub fn spawn_wall(
     tilesets: &Res<Tilesets>,
     commands: &mut Commands,
@@ -40,11 +37,10 @@ pub fn spawn_wall(
     position: Vec3,
 ) -> Entity {
     let entity = spawn_tile(tilesets, commands, atlas_name, sprite_index, position);
-    commands.entity(entity)
+    commands
+        .entity(entity)
         .insert(Collider::cuboid(8.0, 8.0))
         .insert(Obstacle);
 
-
     entity
 }
-

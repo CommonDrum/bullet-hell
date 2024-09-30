@@ -2,7 +2,6 @@ use crate::game::prelude::*;
 use rand::Rng;
 
 use crate::game::ai;
-use crate::game::map::pathfinding::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins(ai::plugin)
@@ -10,11 +9,7 @@ pub(super) fn plugin(app: &mut App) {
         .add_systems(Update, melee_damage.run_if(in_state(AppState::Game)));
 }
 
-pub fn spawn_enemy(
-    commands: &mut Commands,
-    texture: Handle<Image>,
-    position: Vec3,
-) -> Entity {
+pub fn spawn_enemy(commands: &mut Commands, texture: Handle<Image>, position: Vec3) -> Entity {
     commands
         .spawn((
             SpriteBundle {
@@ -39,15 +34,12 @@ pub fn spawn_enemy(
         .id()
 }
 
-
 fn spawn_ant(commands: &mut Commands, asset_server: &Res<AssetServer>, position: Vec3) -> Entity {
     let texture: Handle<Image> = asset_server.load("sprites/Ants/ant1_v2.png");
     let entity = spawn_enemy(commands, texture, position);
     commands.entity(entity).insert(Melee(24.0));
     entity
 }
-
-
 
 fn place_enemy_debug(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut rng = rand::thread_rng();
@@ -59,7 +51,6 @@ fn place_enemy_debug(mut commands: Commands, asset_server: Res<AssetServer>) {
         spawn_ant(&mut commands, &asset_server, Vec3::new(x, y, 0.0));
     }
 }
-
 
 fn melee_damage(
     mut set: ParamSet<(

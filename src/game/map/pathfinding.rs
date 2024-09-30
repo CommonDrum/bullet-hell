@@ -1,4 +1,3 @@
-
 use crate::game::prelude::*;
 use pathfinding::prelude::astar;
 use std::collections::HashMap;
@@ -66,7 +65,9 @@ impl Pathfinder {
     }
 
     fn is_obstacle(&self, pos: &Pos) -> bool {
-        self.obstacles.values().any(|obstacle_pos| *obstacle_pos == *pos)
+        self.obstacles
+            .values()
+            .any(|obstacle_pos| *obstacle_pos == *pos)
     }
 
     fn is_within_bounds(&self, pos: &Pos) -> bool {
@@ -78,7 +79,6 @@ impl Pathfinder {
             self.obstacles.insert(entity, pos);
         }
     }
-
 }
 
 impl Pos {
@@ -86,11 +86,6 @@ impl Pos {
         (self.0.abs_diff(other.0) + self.1.abs_diff(other.1)) as usize
     }
 }
-
-
-
-
-
 
 #[cfg(test)]
 mod tests {
@@ -137,9 +132,14 @@ mod tests {
         let goal = Pos(0, 0);
 
         let obstacle_positions = vec![
-            Pos(-1, -1), Pos(0, -1), Pos(1, -1),
-            Pos(-1, 0),             Pos(1, 0),
-            Pos(-1, 1),  Pos(0, 1),  Pos(1, 1),
+            Pos(-1, -1),
+            Pos(0, -1),
+            Pos(1, -1),
+            Pos(-1, 0),
+            Pos(1, 0),
+            Pos(-1, 1),
+            Pos(0, 1),
+            Pos(1, 1),
         ];
 
         for (i, pos) in obstacle_positions.into_iter().enumerate() {
@@ -160,9 +160,13 @@ mod tests {
         let goal = Pos(0, 0);
 
         let obstacle_positions = vec![
-            Pos(-1, -1), Pos(0, -1), Pos(1, -1),
+            Pos(-1, -1),
+            Pos(0, -1),
+            Pos(1, -1),
             Pos(-1, 0),
-            Pos(-1, 1),  Pos(0, 1),  Pos(1, 1),
+            Pos(-1, 1),
+            Pos(0, 1),
+            Pos(1, 1),
         ];
 
         for (i, pos) in obstacle_positions.into_iter().enumerate() {
@@ -180,4 +184,3 @@ mod tests {
         assert!(positions.contains(&Pos(1, 0)));
     }
 }
-
