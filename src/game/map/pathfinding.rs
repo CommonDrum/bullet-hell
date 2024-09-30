@@ -72,10 +72,17 @@ impl Pathfinder {
     fn is_within_bounds(&self, pos: &Pos) -> bool {
         pos.0 >= -self.max && pos.0 <= self.max && pos.1 >= -self.max && pos.1 <= self.max
     }
+
+    pub fn add_obstacle(&mut self, entity: Entity, pos: Pos) {
+        if self.is_within_bounds(&pos) {
+            self.obstacles.insert(entity, pos);
+        }
+    }
+
 }
 
 impl Pos {
-    fn distance(&self, other: &Pos) -> usize {
+    pub fn distance(&self, other: &Pos) -> usize {
         (self.0.abs_diff(other.0) + self.1.abs_diff(other.1)) as usize
     }
 }

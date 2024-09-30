@@ -40,7 +40,9 @@ pub fn spawn_wall(
     position: Vec3,
 ) -> Entity {
     let entity = spawn_tile(tilesets, commands, atlas_name, sprite_index, position);
-    commands.entity(entity).insert(Collider::cuboid(8.0, 8.0));
+    commands.entity(entity)
+        .insert(Collider::cuboid(8.0, 8.0))
+        .insert(Obstacle);
 
 
     entity

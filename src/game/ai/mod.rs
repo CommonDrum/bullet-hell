@@ -10,7 +10,7 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         (
             movement_system.run_if(in_state(AppState::Game)),
-            (aggressive_ai, obstacle_avoidance_system, follow_player, path_update )
+            (aggressive_ai, follow_player, path_update, obstacle_avoidance_system )
                 .chain()
                 .run_if(in_state(AppState::Game)),
         ),
@@ -48,10 +48,10 @@ fn aggressive_ai(
         let position = Vec2::new(transform.translation.x, transform.translation.y);
 
         if let Some((next_pos, _)) = path.0.first() {
-            let next_position = Vec2::new(next_pos.0 as f32, next_pos.1 as f32);
-            let angle = angle_between_points(position, next_position);
+            let destination = pos_to_viewport(next_pos);
+            let angle = angle_between_points(position, destination);
             let index = radians_to_index(angle, direction_array.0.len());
-            direction_array.change_weight(index, 1.0);
+            direction_array.change_weight(index, 2.0);
         }
     }
 }
@@ -63,7 +63,11 @@ fn obstacle_avoidance_system(
     for (transform, mut direction_array) in query.iter_mut() {
         let position = Vec2::new(transform.translation.x, transform.translation.y);
         let arr_size = direction_array.0.len();
-        let is_dir_obstructed = round_raycast(&rapier_context, position, arr_size, 10.0, 50.0);
+        let is_dir_obstructed = round_raycast(&rapier_context, position, arr_size, 3.0, 16.0);  // THIS
+                                                                                                 // DEPENDS
+                                                                                                 // ON
+                                                                                                 // COLLIDER
+                                                                                                 // SIEZE
 
         for (i, is_obstructed) in is_dir_obstructed.iter().enumerate() {
             if *is_obstructed {
@@ -89,23 +93,18 @@ fn follow_player(
     mut commands: Commands,
     mut pathfinder: ResMut<Pathfinder>,
 ) {
-    // Get the player's grid position using viewport_to_pos
     let player_position = {
         let transform = q_player.get_single().unwrap();
         viewport_to_pos(transform.translation.x, transform.translation.y)
     };
 
-    // Iterate over each enemy without a path
     for (entity, transform) in q_enemies.iter() {
-        // Get the enemy's grid position using viewport_to_pos
         let enemy_position = viewport_to_pos(transform.translation.x, transform.translation.y);
 
-        // Find a path from the enemy to the player
         if let Some(path) = pathfinder.find_path(enemy_position.clone(), player_position.clone()) {
-            // Insert the Path component into the enemy entity
+            println!("{:?}", path.0);
             commands.entity(entity).insert(path);
         } else {
-            // Handle the case where no path is found
             println!("No path found for enemy at position {:?}", enemy_position);
         }
     }
@@ -119,12 +118,9 @@ fn path_update(
         let current_pos = viewport_to_pos(transform.translation.x, transform.translation.y);
 
         if let Some((next_pos, _)) = path.0.first() {
-            if current_pos == *next_pos {
+            let distance = current_pos.distance(next_pos);
+            if distance <= 2{
                 path.0.remove(0);
-
-                if path.0.is_empty() {
-                    commands.entity(entity).remove::<Path>();
-                }
             }
         } else {
             commands.entity(entity).remove::<Path>();
