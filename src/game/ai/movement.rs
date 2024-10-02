@@ -55,7 +55,7 @@ pub fn obstacle_avoidance_system(
 
         for (i, is_obstructed) in is_dir_obstructed.iter().enumerate() {
             if *is_obstructed {
-                direction_array.change_weight(i, -1.0);
+                direction_array.change_weight(i, -0.75);
             }
         }
     }
@@ -94,11 +94,11 @@ pub fn follow_player(
 
 pub fn path_update(mut commands: Commands, mut q_paths: Query<(Entity, &mut Path, &Transform)>) {
     for (entity, mut path, transform) in q_paths.iter_mut() {
-        let current_pos = viewport_to_pos(transform.translation.x, transform.translation.y);
-
+        let current_pos = Vec2::new(transform.translation.x, transform.translation.y);
         if let Some((next_pos, _)) = path.0.first() {
-            let distance = current_pos.distance(next_pos);
-            if distance <= 2 {
+            let destination = pos_to_viewport(next_pos);
+            let distance = (current_pos - destination).length();
+            if distance <= 16.0 {
                 path.0.remove(0);
             }
         } else {

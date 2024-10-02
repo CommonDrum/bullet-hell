@@ -34,10 +34,6 @@ pub fn angle_between_points(point1: Vec2, point2: Vec2) -> f32 {
     difference.y.atan2(difference.x)
 }
 
-pub fn distance_between_points(x1: f32, y1: f32, x2: f32, y2: f32) -> f32 {
-    ((x2 - x1).powi(2) + (y2 - y1).powi(2)).sqrt()
-}
-
 pub fn round_raycast(
     rapier_context: &RapierContext,
     entity_position: Vec2,
