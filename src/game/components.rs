@@ -33,29 +33,8 @@ pub struct Destination(pub Vec3);
 #[derive(Event)]
 pub struct DamageEvent(pub Entity, pub Damage);
 
-#[derive(Component)]
-pub struct Path(pub Vec<(isize, isize)>);
 
-#[derive(Component)]
-pub struct DirectionArray(pub [f32; 16]);
 
-impl DirectionArray {
-    pub fn change_weight(&mut self, index: usize, value: f32) {
-        let arr = &mut self.0;
-        let len = arr.len();
-        let max_offset = len / 4;
-
-        arr[index] += value;
-
-        for offset in 1..=max_offset {
-            let factor = value * (1.0 - (offset as f32) / (max_offset as f32 + 1.0));
-            let left_index = (index + len - offset) % len;
-            let right_index = (index + offset) % len;
-            arr[left_index] += factor;
-            arr[right_index] += factor;
-        }
-    }
-}
 
 #[derive(Component)]
 pub struct Melee(pub f32);

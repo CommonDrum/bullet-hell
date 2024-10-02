@@ -2,6 +2,7 @@ use crate::game::prelude::*;
 use rand::Rng;
 
 use crate::game::ai;
+use crate::game::map::pathfinding::DirectionArray;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins(ai::plugin)
@@ -44,7 +45,7 @@ fn spawn_ant(commands: &mut Commands, asset_server: &Res<AssetServer>, position:
 fn place_enemy_debug(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut rng = rand::thread_rng();
 
-    for _ in 0..1 {
+    for _ in 0..10 {
         let x = rng.gen_range(-20.0..200.0);
         let y = rng.gen_range(-200.0..200.0);
 

@@ -23,12 +23,11 @@ pub fn movement_system(
         let movement = Vec2::new(angle.cos(), angle.sin());
         let velocity = movement * speed.0 * time.delta_seconds();
         controller.translation = Some(velocity);
-        transform.rotation = Quat::from_rotation_z(angle - PI / 2.0);
     }
 }
 
-pub fn aggressive_ai(mut set: ParamSet<(Query<(&Transform, &mut DirectionArray, &Path)>,)>) {
-    for (transform, mut direction_array, path) in set.p0().iter_mut() {
+pub fn head_to_next_path_pos(mut query: Query<(&Transform, &mut DirectionArray, &Path)>) {
+    for (transform, mut direction_array, path) in query.iter_mut() {
         let position = Vec2::new(transform.translation.x, transform.translation.y);
 
         if let Some((next_pos, _)) = path.0.first() {
@@ -69,25 +68,24 @@ pub fn max_index(arr: &[f32]) -> usize {
         .expect("Array is empty")
 }
 
-pub fn follow_player(
+
+pub fn chase_player(
     q_player: Query<&Transform, (With<Player>, Without<Enemy>)>,
-    q_enemies: Query<(Entity, &Transform), (With<Enemy>, Without<Path>)>,
+    mut q_enemies: Query<(Entity, &Transform), With<Enemy>>,
     mut commands: Commands,
-    pathfinder: ResMut<Pathfinder>,
+    mut pathfinder: ResMut<Pathfinder>,
 ) {
-    let player_position = {
-        let transform = q_player.get_single().unwrap();
-        viewport_to_pos(transform.translation.x, transform.translation.y)
-    };
+    if let Ok(player_transform) = q_player.get_single() {
+        let player_position = viewport_to_pos(player_transform.translation.x, player_transform.translation.y);
 
-    for (entity, transform) in q_enemies.iter() {
-        let enemy_position = viewport_to_pos(transform.translation.x, transform.translation.y);
+        for (entity, transform) in q_enemies.iter_mut() {
+            let enemy_position = viewport_to_pos(transform.translation.x, transform.translation.y);
 
-        if let Some(path) = pathfinder.find_path(enemy_position.clone(), player_position.clone()) {
-            println!("{:?}", path.0);
-            commands.entity(entity).insert(path);
-        } else {
-            println!("No path found for enemy at position {:?}", enemy_position);
+            commands.entity(entity).remove::<Path>();
+
+            if let Some(path) = pathfinder.find_path(enemy_position.clone(), player_position.clone()) {
+                commands.entity(entity).insert(path);
+            }
         }
     }
 }

@@ -2,7 +2,7 @@ use crate::game::prelude::*;
 use pathfinding::prelude::astar;
 use std::collections::HashMap;
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 pub struct Path(pub Vec<(Pos, usize)>);
 
 #[derive(Component)]
@@ -10,6 +10,37 @@ pub struct Obstacle;
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct Pos(pub i32, pub i32);
+
+impl Pos {
+    pub fn distance(&self, other: &Pos) -> usize {
+        (self.0.abs_diff(other.0) + self.1.abs_diff(other.1)) as usize
+    }
+}
+
+#[derive(Component)]
+pub struct DirectionArray(pub [f32; 16]); // make this take in 
+
+impl DirectionArray {
+    pub fn change_weight(&mut self, index: usize, value: f32) {
+        let arr = &mut self.0;
+        let len = arr.len();
+        let max_offset = len / 4;
+
+        arr[index] += value;
+
+        for offset in 1..=max_offset {
+            let factor = value * (1.0 - (offset as f32) / (max_offset as f32 + 1.0));
+            let left_index = (index + len - offset) % len;
+            let right_index = (index + offset) % len;
+            arr[left_index] += factor;
+            arr[right_index] += factor;
+        }
+    }
+
+    
+}
+
+
 
 #[derive(Resource)]
 pub struct Pathfinder {
@@ -81,11 +112,7 @@ impl Pathfinder {
     }
 }
 
-impl Pos {
-    pub fn distance(&self, other: &Pos) -> usize {
-        (self.0.abs_diff(other.0) + self.1.abs_diff(other.1)) as usize
-    }
-}
+
 
 #[cfg(test)]
 mod tests {
