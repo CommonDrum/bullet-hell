@@ -13,30 +13,34 @@ pub(super) fn plugin(app: &mut App) {
         );
 }
 
-fn place_player(mut commands: Commands, tilesets: Res<Tilesets>) {
+pub fn place_player(mut commands: Commands, tilesets: Res<Tilesets>) {
     let atlas_name = "player";
     let sprite_index = 21;
     let position = Vec3::new(50.0, 200.0, 0.0);
+    let transform = Transform::from_translation(position);
 
     if let Some((layout_handle, texture_handle)) = tilesets.atlases.get(atlas_name) {
-        commands.spawn((
-            Player,
-            Speed(270.0),
+        let player = spawn_actor(
+            Collider::ball(8.0),
+            Size(16.0),
             Health(100.0),
+            Speed(270.0),
+            transform,
+            &mut commands,
+        );
+
+        commands.entity(player).insert((
+            Player,
             SpriteBundle {
                 texture: texture_handle.clone(),
-                transform: Transform::from_translation(position),
+                transform,
                 ..default()
             },
-            TextureAtlas {
+            TextureAtlas{
                 layout: layout_handle.clone(),
                 index: sprite_index,
+                ..Default::default()
             },
-            RigidBody::KinematicPositionBased,
-            Collider::ball(8.0),
-            LockedAxes::TRANSLATION_LOCKED,
-            KinematicCharacterController::default(),
-            Game,
         ));
     } else {
         eprintln!("Tileset '{}' not found", atlas_name);
