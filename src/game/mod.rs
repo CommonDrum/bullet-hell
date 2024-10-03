@@ -7,6 +7,7 @@ pub mod player;
 pub mod preloader;
 pub mod prelude;
 pub mod utils;
+pub mod actor;
 
 use crate::game::prelude::*;
 
