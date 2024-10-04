@@ -3,6 +3,7 @@ use rand::Rng;
 
 use crate::game::ai;
 use crate::game::map::pathfinding::DirectionArray;
+use crate::game::map::pathfinding::Obstacle;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins(ai::plugin)
@@ -11,28 +12,32 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 pub fn spawn_enemy(commands: &mut Commands, texture: Handle<Image>, position: Vec3) -> Entity {
-    commands
-        .spawn((
-            SpriteBundle {
-                texture,
-                transform: Transform::from_translation(position),
-                sprite: Sprite {
-                    custom_size: Some(Vec2::new(16.0, 16.0)),
-                    ..Default::default()
-                },
+    let transform = Transform::from_translation(position);
+    let enemy = spawn_actor(
+            Collider::ball(8.0),
+            Size(16.0),
+            Health(100.0),
+            Speed(70.0),
+            transform,
+            commands,
+        );
+
+    commands.entity(enemy).insert((
+        SpriteBundle {
+            texture,
+            transform,
+            sprite: Sprite {
+                custom_size: Some(Vec2::new(16.0, 16.0)),
                 ..Default::default()
             },
-            Health(100.0),
-            Speed(80.0),
-            RigidBody::KinematicPositionBased,
-            Collider::ball(8.0),
-            KinematicCharacterController::default(),
-            Enemy,
-            AiMode::Passive,
-            DirectionArray([0.0; 16]),
-            Game,
-        ))
-        .id()
+            ..Default::default()
+        },
+        Enemy,
+        DirectionArray([0.0; 16]),
+        Obstacle,
+    ));
+
+    enemy
 }
 
 fn spawn_ant(commands: &mut Commands, asset_server: &Res<AssetServer>, position: Vec3) -> Entity {
@@ -45,7 +50,7 @@ fn spawn_ant(commands: &mut Commands, asset_server: &Res<AssetServer>, position:
 fn place_enemy_debug(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut rng = rand::thread_rng();
 
-    for _ in 0..10 {
+    for _ in 0..50 {
         let x = rng.gen_range(-20.0..200.0);
         let y = rng.gen_range(-200.0..200.0);
 
