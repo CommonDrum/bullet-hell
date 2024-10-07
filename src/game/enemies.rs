@@ -3,6 +3,7 @@ use rand::Rng;
 
 use crate::game::ai;
 use crate::game::map::pathfinding::DirectionArray;
+use crate::game::map::pathfinding::Path;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins(ai::plugin)
@@ -31,6 +32,7 @@ pub fn spawn_enemy(commands: &mut Commands, texture: Handle<Image>, position: Ve
             AiMode::Passive,
             DirectionArray([0.0; 16]),
             Game,
+            Path(Vec::new()),
         ))
         .id()
 }

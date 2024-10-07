@@ -8,7 +8,7 @@ pub struct Path(pub Vec<(Pos, usize)>);
 #[derive(Component)]
 pub struct Obstacle;
 
-#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct Pos(pub i32, pub i32);
 
 impl Pos {

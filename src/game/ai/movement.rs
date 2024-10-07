@@ -69,26 +69,29 @@ pub fn max_index(arr: &[f32]) -> usize {
 }
 
 
+
 pub fn chase_player(
     q_player: Query<&Transform, (With<Player>, Without<Enemy>)>,
-    mut q_enemies: Query<(Entity, &Transform), With<Enemy>>,
+    mut q_enemies: Query<(Entity, &Transform, &AiMode), Without<Player>>,
     mut commands: Commands,
     mut pathfinder: ResMut<Pathfinder>,
 ) {
     if let Ok(player_transform) = q_player.get_single() {
         let player_position = viewport_to_pos(player_transform.translation.x, player_transform.translation.y);
 
-        for (entity, transform) in q_enemies.iter_mut() {
-            let enemy_position = viewport_to_pos(transform.translation.x, transform.translation.y);
+        for (entity, transform, ai_mode) in q_enemies.iter_mut() {
+            if *ai_mode == AiMode::Chase {
+                let enemy_position = viewport_to_pos(transform.translation.x, transform.translation.y);
+                commands.entity(entity).remove::<Path>();
 
-            commands.entity(entity).remove::<Path>();
-
-            if let Some(path) = pathfinder.find_path(enemy_position.clone(), player_position.clone()) {
-                commands.entity(entity).insert(path);
+                if let Some(path) = pathfinder.find_path(enemy_position, player_position) {
+                    commands.entity(entity).insert(path);
+                }
             }
         }
     }
 }
+
 
 pub fn path_update(mut commands: Commands, mut q_paths: Query<(Entity, &mut Path, &Transform)>) {
     for (entity, mut path, transform) in q_paths.iter_mut() {
