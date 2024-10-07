@@ -29,6 +29,7 @@ pub fn spawn_actor(
             size,
             health,
             speed,
+            position,
             KinematicCharacterController::default(),
             RigidBody::KinematicPositionBased)
         ).id()

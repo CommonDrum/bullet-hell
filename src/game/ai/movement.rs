@@ -3,19 +3,17 @@ use crate::game::map::pathfinding::*;
 use crate::game::map::*;
 use crate::game::prelude::*;
 use crate::game::utils::*;
-use std::f32::consts::PI;
 
 
 pub fn movement_system(
     mut query: Query<(
         &mut KinematicCharacterController,
         &Speed,
-        &mut Transform,
         &mut DirectionArray,
     )>,
     time: Res<Time>,
 ) {
-    for (mut controller, speed, mut transform, mut direction_array) in query.iter_mut() {
+    for (mut controller, speed, mut direction_array) in query.iter_mut() {
         normalize_array(&mut direction_array.0);
         let max_index = max_index(&direction_array.0);
         let arr_size = direction_array.0.len();
@@ -74,7 +72,7 @@ pub fn chase_player(
     q_player: Query<&Transform, (With<Player>, Without<Enemy>)>,
     mut q_enemies: Query<(Entity, &Transform, &AiMode), Without<Player>>,
     mut commands: Commands,
-    mut pathfinder: ResMut<Pathfinder>,
+    pathfinder: ResMut<Pathfinder>,
 ) {
     if let Ok(player_transform) = q_player.get_single() {
         let player_position = viewport_to_pos(player_transform.translation.x, player_transform.translation.y);

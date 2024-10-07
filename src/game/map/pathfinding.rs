@@ -89,7 +89,7 @@ impl Pathfinder {
         ]
         .into_iter()
         .filter(|p| !self.is_obstacle(p) && self.is_within_bounds(p))
-        .map(|p| (p.clone(), 1))
+        .map(|p| (p, 1))
         .collect()
     }
 
@@ -122,9 +122,9 @@ mod tests {
         let pathfinder = Pathfinder::new(10);
         let start = Pos(-2, -2);
         let goal = Pos(9, 9);
-        let path = pathfinder.find_path(start.clone(), goal.clone()).unwrap();
+        let path = pathfinder.find_path(start, goal).unwrap();
 
-        let positions: Vec<Pos> = path.0.iter().map(|(pos, _)| pos.clone()).collect();
+        let positions: Vec<Pos> = path.0.iter().map(|(pos, _)| *pos).collect();
 
         assert_eq!(positions.first().unwrap(), &start);
         assert_eq!(positions.last().unwrap(), &goal);
@@ -138,9 +138,9 @@ mod tests {
         pathfinder.obstacles.insert(Entity::from_raw(3), Pos(2, 4));
         let start = Pos(0, 0);
         let goal = Pos(5, 5);
-        let path = pathfinder.find_path(start.clone(), goal.clone()).unwrap();
+        let path = pathfinder.find_path(start, goal).unwrap();
 
-        let positions: Vec<Pos> = path.0.iter().map(|(pos, _)| pos.clone()).collect();
+        let positions: Vec<Pos> = path.0.iter().map(|(pos, _)| *pos).collect();
 
         assert!(positions.contains(&goal));
         assert!(!positions.contains(&Pos(2, 2)));
@@ -171,7 +171,7 @@ mod tests {
 
         let start = Pos(2, 2);
 
-        let path = pathfinder.find_path(start.clone(), goal.clone());
+        let path = pathfinder.find_path(start, goal);
 
         assert!(path.is_none(), "Expected no path, but found one");
     }
@@ -198,9 +198,9 @@ mod tests {
 
         let start = Pos(2, 2);
 
-        let path = pathfinder.find_path(start.clone(), goal.clone()).unwrap();
+        let path = pathfinder.find_path(start, goal).unwrap();
 
-        let positions: Vec<Pos> = path.0.iter().map(|(pos, _)| pos.clone()).collect();
+        let positions: Vec<Pos> = path.0.iter().map(|(pos, _)| *pos).collect();
 
         assert!(positions.contains(&goal));
         assert!(positions.contains(&Pos(1, 0)));
