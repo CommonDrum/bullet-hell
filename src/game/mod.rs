@@ -1,3 +1,4 @@
+pub mod actor;
 pub mod ai;
 pub mod bullets;
 pub mod components;
@@ -7,7 +8,6 @@ pub mod player;
 pub mod preloader;
 pub mod prelude;
 pub mod utils;
-pub mod actor;
 
 use crate::game::prelude::*;
 

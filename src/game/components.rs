@@ -27,7 +27,6 @@ pub struct Destination(pub Vec3);
 #[derive(Event)]
 pub struct DamageEvent(pub Entity, pub Damage);
 
-
 #[derive(Component)]
 pub struct Melee(pub f32);
 

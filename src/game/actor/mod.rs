@@ -19,11 +19,10 @@ pub fn spawn_actor(
     speed: Speed,
     position: Transform,
     commands: &mut Commands,
-    ) -> Entity {
-
+) -> Entity {
     commands
-        .spawn(
-            ( Actor,
+        .spawn((
+            Actor,
             Game,
             collider,
             size,
@@ -31,6 +30,7 @@ pub fn spawn_actor(
             speed,
             position,
             KinematicCharacterController::default(),
-            RigidBody::KinematicPositionBased)
-        ).id()
+            RigidBody::KinematicPositionBased,
+        ))
+        .id()
 }

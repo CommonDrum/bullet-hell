@@ -36,10 +36,7 @@ impl DirectionArray {
             arr[right_index] += factor;
         }
     }
-
 }
-
-
 
 #[derive(Resource)]
 pub struct Pathfinder {
@@ -109,8 +106,6 @@ impl Pathfinder {
         }
     }
 }
-
-
 
 #[cfg(test)]
 mod tests {

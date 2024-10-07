@@ -36,7 +36,7 @@ pub fn place_player(mut commands: Commands, tilesets: Res<Tilesets>) {
                 transform,
                 ..default()
             },
-            TextureAtlas{
+            TextureAtlas {
                 layout: layout_handle.clone(),
                 index: sprite_index,
                 ..Default::default()

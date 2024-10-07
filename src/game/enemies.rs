@@ -3,8 +3,8 @@ use rand::Rng;
 
 use crate::game::ai;
 use crate::game::map::pathfinding::DirectionArray;
-use crate::game::map::pathfinding::Path;
 use crate::game::map::pathfinding::Obstacle;
+use crate::game::map::pathfinding::Path;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins(ai::plugin)
@@ -15,13 +15,13 @@ pub(super) fn plugin(app: &mut App) {
 pub fn spawn_enemy(commands: &mut Commands, texture: Handle<Image>, position: Vec3) -> Entity {
     let transform = Transform::from_translation(position);
     let enemy = spawn_actor(
-            Collider::ball(8.0),
-            Size(16.0),
-            Health(100.0),
-            Speed(70.0),
-            transform,
-            commands,
-        );
+        Collider::ball(8.0),
+        Size(16.0),
+        Health(100.0),
+        Speed(70.0),
+        transform,
+        commands,
+    );
 
     commands.entity(enemy).insert((
         SpriteBundle {

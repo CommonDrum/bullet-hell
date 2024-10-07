@@ -25,6 +25,6 @@ pub(super) fn plugin(app: &mut App) {
     .add_systems(
         FixedUpdate,
         (chase_player).chain().run_if(in_state(AppState::Game)),
-    ).insert_resource(Time::<Fixed>::from_seconds(0.8));
+    )
+    .insert_resource(Time::<Fixed>::from_seconds(0.8));
 }
-
