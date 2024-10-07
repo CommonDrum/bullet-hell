@@ -3,7 +3,11 @@ use rand::Rng;
 
 use crate::game::ai;
 use crate::game::map::pathfinding::DirectionArray;
+<<<<<<< HEAD
 use crate::game::map::pathfinding::Path;
+=======
+use crate::game::map::pathfinding::Obstacle;
+>>>>>>> refs/remotes/origin/main
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins(ai::plugin)
@@ -30,6 +34,7 @@ pub fn spawn_enemy(commands: &mut Commands, texture: Handle<Image>, position: Ve
                 custom_size: Some(Vec2::new(16.0, 16.0)),
                 ..Default::default()
             },
+<<<<<<< HEAD
             Health(100.0),
             Speed(80.0),
             RigidBody::KinematicPositionBased,
@@ -42,7 +47,16 @@ pub fn spawn_enemy(commands: &mut Commands, texture: Handle<Image>, position: Ve
             Path(Vec::new()),
         ))
         .id()
-  
+=======
+            ..Default::default()
+        },
+        Enemy,
+        DirectionArray([0.0; 16]),
+        Obstacle,
+    ));
+
+    enemy
+>>>>>>> refs/remotes/origin/main
 }
 
 fn spawn_ant(commands: &mut Commands, asset_server: &Res<AssetServer>, position: Vec3) -> Entity {
