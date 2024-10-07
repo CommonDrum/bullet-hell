@@ -18,7 +18,7 @@ impl Pos {
 }
 
 #[derive(Component)]
-pub struct DirectionArray(pub [f32; 16]); // make this take in 
+pub struct DirectionArray(pub [f32; 16]);
 
 impl DirectionArray {
     pub fn change_weight(&mut self, index: usize, value: f32) {
@@ -37,7 +37,6 @@ impl DirectionArray {
         }
     }
 
-    
 }
 
 
@@ -60,7 +59,6 @@ impl Pathfinder {
         if !self.is_within_bounds(&start) || !self.is_within_bounds(&goal) {
             return None;
         }
-
         astar(
             &start,
             |p| self.successors(p),
@@ -126,7 +124,6 @@ mod tests {
         let goal = Pos(9, 9);
         let path = pathfinder.find_path(start.clone(), goal.clone()).unwrap();
 
-        // Extract positions from the Path
         let positions: Vec<Pos> = path.0.iter().map(|(pos, _)| pos.clone()).collect();
 
         assert_eq!(positions.first().unwrap(), &start);
@@ -143,7 +140,6 @@ mod tests {
         let goal = Pos(5, 5);
         let path = pathfinder.find_path(start.clone(), goal.clone()).unwrap();
 
-        // Extract positions from the Path
         let positions: Vec<Pos> = path.0.iter().map(|(pos, _)| pos.clone()).collect();
 
         assert!(positions.contains(&goal));
@@ -204,7 +200,6 @@ mod tests {
 
         let path = pathfinder.find_path(start.clone(), goal.clone()).unwrap();
 
-        // Extract positions from the Path
         let positions: Vec<Pos> = path.0.iter().map(|(pos, _)| pos.clone()).collect();
 
         assert!(positions.contains(&goal));

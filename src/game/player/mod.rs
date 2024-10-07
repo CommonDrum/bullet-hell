@@ -16,7 +16,7 @@ pub(super) fn plugin(app: &mut App) {
 pub fn place_player(mut commands: Commands, tilesets: Res<Tilesets>) {
     let atlas_name = "player";
     let sprite_index = 21;
-    let position = Vec3::new(50.0, 200.0, 0.0);
+    let position = Vec3::new(50.0, 250.0, 0.0);
     let transform = Transform::from_translation(position);
 
     if let Some((layout_handle, texture_handle)) = tilesets.atlases.get(atlas_name) {
