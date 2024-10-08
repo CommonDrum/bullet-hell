@@ -37,18 +37,13 @@ pub fn head_to_next_path_pos(mut query: Query<(&Transform, &mut DirectionArray, 
 }
 
 pub fn obstacle_avoidance_system(
-    mut query: Query<(&Transform, &mut DirectionArray)>,
+    mut query: Query<(&Transform, &mut DirectionArray, &Size)>,
     rapier_context: Res<RapierContext>,
 ) {
-    for (transform, mut direction_array) in query.iter_mut() {
+    for (transform, mut direction_array, size) in query.iter_mut() {
         let position = Vec2::new(transform.translation.x, transform.translation.y);
         let arr_size = direction_array.0.len();
-        let is_dir_obstructed = round_raycast(&rapier_context, position, arr_size, 3.0, 16.0); // THIS
-                                                                                               // DEPENDS
-                                                                                               // ON
-                                                                                               // COLLIDER
-                                                                                               // SIEZE
-
+        let is_dir_obstructed = round_raycast(&rapier_context, position, arr_size, 3.0, size.0 + 5.0);
         for (i, is_obstructed) in is_dir_obstructed.iter().enumerate() {
             if *is_obstructed {
                 direction_array.change_weight(i, -0.75);

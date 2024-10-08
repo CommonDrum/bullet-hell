@@ -12,6 +12,7 @@ pub struct Size(pub f32);
 #[derive(Component)]
 pub struct Actor;
 
+//TODO: Consider turning into bundle
 pub fn spawn_actor(
     collider: Collider,
     size: Size,
