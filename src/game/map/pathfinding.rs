@@ -1,6 +1,8 @@
 use crate::game::prelude::*;
 use pathfinding::prelude::astar;
 use std::collections::HashMap;
+use bevy::tasks::Task;
+use std::sync::Arc;
 
 #[derive(Component, Clone)]
 pub struct Path(pub Vec<(Pos, usize)>);
@@ -38,7 +40,7 @@ impl DirectionArray {
     }
 }
 
-#[derive(Resource)]
+#[derive(Resource, Clone)]
 pub struct Pathfinder {
     pub obstacles: HashMap<Entity, Pos>,
     pub max: i32,
@@ -106,6 +108,38 @@ impl Pathfinder {
         }
     }
 }
+
+
+
+
+#[derive(Event)]
+pub struct SetPathEvent(pub Entity, pub Pos, pub Pos);
+
+pub fn update_path(
+    mut ev_setpath: EventReader<SetPathEvent>,
+    mut path_q: Query<&mut Path>,
+    pathfinder: Res<Pathfinder>,
+) {
+    for event in ev_setpath.read() {
+        if let Ok(mut path) = path_q.get_mut(event.0) {
+            let start_pos = event.1;
+            let goal_pos = event.2;
+
+            if let Some(new_path) = pathfinder.find_path(start_pos, goal_pos) {
+                *path = new_path;
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
 
 #[cfg(test)]
 mod tests {

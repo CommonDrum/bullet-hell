@@ -17,9 +17,10 @@ pub(super) fn plugin(app: &mut App) {
         OnEnter(AppState::Game),
         (place_background, add_pathfinder, place_the_wall),
     )
+    .add_event::<SetPathEvent>()
     .add_systems(
         Update,
-        (update_obstacles, visualize_path).run_if(in_state(AppState::Game)),
+        (update_obstacles, update_path, visualize_path).run_if(in_state(AppState::Game)),
     );
 }
 
