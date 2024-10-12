@@ -23,3 +23,6 @@ fn main() {
     let random_biome: Biome = rand::random(); 
 }
 
+
+fn generate_map(size: i32, )
+
