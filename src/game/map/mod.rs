@@ -57,7 +57,7 @@ pub fn place_background(mut commands: Commands, tilesets: Res<Tilesets>) {
             let position = Vec3::new(viewport_x, viewport_y, BACKGROUND_LAYER);
 
             if (x % MAP_SIZE == 0 && x != 0) || (y % MAP_SIZE == 0 && y != 0) {
-                spawn_wall(&tilesets, &mut commands, "forest", 20, position);
+                spawn_wall(&tilesets, &mut commands, "forest", 33, position);
             } else {
                 spawn_tile(&tilesets, &mut commands, "forest", 21, position);
             }
@@ -84,7 +84,6 @@ fn update_obstacles(
     for (transform, entity) in q_obstacles.iter() {
         let pos = viewport_to_pos(transform.translation.x, transform.translation.y);
         if !pathfinder.obstacles.contains_key(&entity) {
-            print!("{:?}", pos);
             pathfinder.add_obstacle(entity, pos);
         }
     }
