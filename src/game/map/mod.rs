@@ -57,9 +57,9 @@ pub fn place_background(mut commands: Commands, tilesets: Res<Tilesets>) {
             let position = Vec3::new(viewport_x, viewport_y, BACKGROUND_LAYER);
 
             if (x % MAP_SIZE == 0 && x != 0) || (y % MAP_SIZE == 0 && y != 0) {
-                spawn_wall(&tilesets, &mut commands, "forest", 33, position);
+                spawn_wall(&tilesets, &mut commands, "forest", 48, position);
             } else {
-                spawn_tile(&tilesets, &mut commands, "forest", 21, position);
+                spawn_tile(&tilesets, &mut commands, "forest", 48, position);
             }
         }
     }
