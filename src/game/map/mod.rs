@@ -1,10 +1,12 @@
 use crate::game::prelude::*;
 
 pub mod pathfinding;
+pub mod world_generator;
 mod tiles;
 
 use crate::game::map::pathfinding::Path;
 use crate::game::map::pathfinding::*;
+use crate::game::map::world_generator::*;
 use crate::game::map::tiles::*;
 use bevy::color::palettes::css::*;
 
@@ -15,7 +17,7 @@ const MAP_SIZE: i32 = 50;
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         OnEnter(AppState::Game),
-        (place_background, add_pathfinder, place_the_wall),
+        (generate_map, add_pathfinder),
     )
     .add_event::<SetPathEvent>()
     .add_systems(
@@ -24,9 +26,7 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
-pub fn get_viewport_cords(x: i32, y: i32) -> (f32, f32) {
-    (x as f32 * PIXELS_PER_TILE, y as f32 * PIXELS_PER_TILE)
-}
+
 
 pub fn viewport_to_pos(x: f32, y: f32) -> Pos {
     Pos(

@@ -53,7 +53,7 @@ fn spawn_ant(commands: &mut Commands, asset_server: &Res<AssetServer>, position:
 fn place_enemy_debug(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut rng = rand::thread_rng();
 
-    for _ in 0..50 {
+    for _ in 0..5 {
         let x = rng.gen_range(-20.0..200.0);
         let y = rng.gen_range(-200.0..200.0);
 
