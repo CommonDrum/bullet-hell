@@ -41,7 +41,7 @@ pub fn generate_map(mut commands: Commands, tilesets: Res<Tilesets>) {
             let position = Vec3::new(viewport_x, viewport_y, BACKGROUND_LAYER);
 
             if x == -MAP_SIZE || x == MAP_SIZE || y == -MAP_SIZE || y == MAP_SIZE {
-                spawn_wall(&tilesets, &mut commands, "forest", 86, position);
+                spawn_tree(&tilesets, &mut commands, "res", (26,26), position);
             } else {
                 let noise_value = perlin.get([x as f64 / 11.0, y as f64 / 11.0]);
 
