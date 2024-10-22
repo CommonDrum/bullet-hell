@@ -53,7 +53,7 @@ pub fn spawn_tree(
     position: Vec3,
 ) {
     let trunk_entity = spawn_wall(tilesets, commands, atlas_name, sprite_indices.0, position);
-    let top_position = position + Vec3::new(0.0, 16.0, 0.0);
+    let top_position = position + Vec3::new(16.0, 0.0, 0.0);
     let top_entity = spawn_tile(tilesets, commands, atlas_name, sprite_indices.1, top_position);
     commands.entity(trunk_entity).add_child(top_entity);
 }
