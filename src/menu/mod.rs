@@ -112,3 +112,6 @@ fn cleanup_menu(mut commands: Commands, menu_entities: Query<Entity, With<OnMenu
         commands.entity(entity).despawn();
     }
 }
+
+
+// Testowanko
